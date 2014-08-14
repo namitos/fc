@@ -11,6 +11,7 @@
 	.array{
 		padding:10px;
 		background:rgba(0,0,0,0.1);
+		margin-bottom:10px;
 	}
 	label{
 		display:block;
@@ -32,6 +33,24 @@ var schema = {
 		foo2: {
 			type: 'integer',
 			label:'sample integer'
+		},
+		foo3: {
+			type: 'object',
+			label:'sample nested object',
+			properties: {
+				foo: {
+					type: 'string',
+					label:'sample string'
+				},
+				foo1: {
+					type: 'number',
+					label:'sample number'
+				},
+				foo2: {
+					type: 'integer',
+					label:'sample integer'
+				}
+			}
 		},
 		arr: {
 			type: 'array',
