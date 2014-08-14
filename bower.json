@@ -2,7 +2,9 @@
 	"name": "sm",
 	"version": "0.1",
 	"private": false,
+	"main": "schema-manipulator.js",
 	"dependencies": {
 		"lodash": "2.x"
-	}
+	},
+	"ignore": []
 }
