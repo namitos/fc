@@ -4,622 +4,61 @@
 <div class='test'></div>
 
 <style>
+	*{
+		font-family:arial;
+	}
 	.object,
 	.array{
 		padding:10px;
 		background:rgba(0,0,0,0.1);
 	}
+	label{
+		display:block;
+	}
 </style>
 <script>
 
 var schema = {
-	info: {
-		titleField: 'address'
-	},
 	type: 'object',
 	properties: {
-		complex_title: {
-			type: "object",
-            properties: {
-                body: {
-                    type: "string",
-                    widget: 'textarea',
-                    attributes: {
-                        foo:'bar',
-                        class:'sdsdf'
-                    }
-                }
-            }
+		foo: {
+			type: 'string',
+			label:'sample string'
 		},
-		asasdasd: {
+		foo1: {
+			type: 'number',
+			label:'sample number'
+		},
+		foo2: {
+			type: 'integer',
+			label:'sample integer'
+		},
+		arr: {
 			type: 'array',
+			label:'sample array of primitives',
 			items: {
-				type: 'integer',
-				label: 'bla blabla'
+				type: 'string'
 			}
 		},
-		rooms: {
-			type: "array",
+		arr2: {
+			type: 'array',
+			label:'sample array of objects',
 			items: {
-				type: "object",
+				type: 'object',
 				properties: {
-					rooms_count: {
-						type: "number",
-						info: {
-							label: "Количество комнат"
-						}
+					foo: {
+						type: 'string',
+						label:'sample string'
 					},
-					square: {
-						type: "number",
-						info: {
-							label: "Площадь"
-						}
+					foo1: {
+						type: 'number',
+						label:'sample number'
 					},
-					price: {
-						type: "number",
-						info: {
-							label: "Цена"
-						}
-					},
-					_tmpPriceM2: {
-						type: "number",
-						info: {
-							label: "Цена М<sup>2</sup>"
-						}
-					},
-					estimate_remainder: {
-						type: "number",
-						info: {
-							"label": "Оценка остатка, шт."
-						}
+					foo2: {
+						type: 'integer',
+						label:'sample integer'
 					}
 				}
-			},
-			info: {
-				label: 'Квартиры'
-			}
-		},
-
-		project: {
-			type:'array',
-			info:{
-				label:'По проекту'
-			},
-			items:{
-				type:'object',
-				properties:{
-					file:{
-						type: 'any',//для схемы мы указали тип любой, чтобы потом в info его переопределить как file
-						info: {
-							type: 'file',
-							mimes: ['image/jpeg', 'image/png'],//какие mime типы разрешены
-							storage: {//инфа о хранилище
-								access: 'pub',//доступ публичный
-								type: 'filesystem',//в файловой системе
-								path: 'project'//папка в этом хранилище
-							}
-						}
-					},
-					title:{
-						type:'string'
-					}
-				}
-			}
-		},
-		image: {
-			type:'array',
-			label:'Фото',
-			items:{
-				type:'object',
-				properties:{
-					file:{
-						type: 'any',//для схемы мы указали тип любой, чтобы потом в info его переопределить как file
-						widget: 'file',
-						label:'Файл',
-						info: {
-							mimes: ['image/jpeg', 'image/png'],//какие mime типы разрешены
-							storage: {//инфа о хранилище
-								access: 'pub',//доступ публичный
-								type: 'filesystem',//в файловой системе
-								path: 'image'//папка в этом хранилище
-							}
-						}
-					},
-					title:{
-						type:'string'
-					}
-				}
-			}
-		},
-		plan: {
-			type:'array',
-			info:{
-				label:'Планировки'
-			},
-			items:{
-				type:'object',
-				properties:{
-					file:{
-						type: 'any',//для схемы мы указали тип любой, чтобы потом в info его переопределить как file
-						info: {
-							type: 'file',
-							mimes: ['image/jpeg', 'image/png'],//какие mime типы разрешены
-							storage: {//инфа о хранилище
-								access: 'pub',//доступ публичный
-								type: 'filesystem',//в файловой системе
-								path: 'plan'//папка в этом хранилище
-							}
-						}
-					},
-					title:{
-						type:'string'
-					}
-				}
-			}
-		},
-		"developer": {
-			"type": "number",
-			required: true,
-			"info": {
-				"label": "Девелопер",
-				"type": "select",
-				"options": {}
-			}
-		},
-		"levels": {
-			"type": "number",
-			required: true,
-			"info": {
-				"label": "Этажность"
-			}
-		},
-		"class": {
-			"type": "number",
-			required: true,
-			"info": {
-				"label": "Класс",
-				"type": "select",
-				"options": {
-					"1": "Эконом",
-					"2": "Средний",
-					"3": "Бизнес",
-					"4": "Элитный"
-				}
-			}
-		},
-		"city": {
-			"type": "number",
-			required: true,
-			"info": {
-				"label": "Город",
-				"type": "select",
-				"options": {
-					"1": "Краснодар",
-					"2": "Ростов"
-				}
-			}
-		},
-		"geo": {
-			"type": "number",
-			required: true,
-			"info": {
-				"label": "Район",
-				"type": "select",
-				"options": {}
-			}
-		},
-		"address": {
-			"type": "string",
-			required: true,
-			"info": {
-				"label": "Адрес"
-			}
-		},
-		"date_commissioning": {
-			"type": "number",
-			"info": {
-				"label": "Ввод в эксплуатацию"
-			}
-		},
-		"date_commissioning1": {
-			"type": "number",
-			"info": {
-				"label": "Ввод в экплуатацию (фактический)"
-			}
-		},
-		"buy_rules": {
-			"type": "number",
-			"info": {
-				"label": "Оформление покупки квартиры",
-				"type": "select",
-				"options": {
-					"1": "на основании ФЗ № 214",
-					"2": "предварительный договор",
-					"3": "вступление в ЖСК",
-					"4": "купля-продажа",
-					"5": "договор соинвестирования"
-				}
-			}
-		},
-		"builder": {
-			"type": "number",
-			required: true,
-			"info": {
-				"label": "Застройщик",
-				"type": "select",
-				"options": {}
-			}
-		},
-		"contractor": {
-			"type": "number",
-			"info": {
-				"label": "Подрядчик",
-				"type": "select",
-				"options": {}
-			}
-		},
-		"site": {
-			"type": "string",
-			"info": {
-				"label": "Сайт"
-			}
-		},
-		"parking": {
-			"type": "number",
-			"info": {
-				"label": "Паркинг",
-				"type": "select",
-				"options": {
-					"1": "В проекте застройки",
-					"2": "Надземный",
-					"3": "Надземный и подземный",
-					"4": "Наземный многоуровневый",
-					"5": "Отсутствует",
-					"6": "Подземный многоуровневый",
-					"7": "Подземный одноуровневый"
-				}
-			}
-		},
-		"parking_count": {
-			"type": "number",
-			"info": {
-				"label": "Количество машиномест в паркинге"
-			}
-		},
-
-
-		"building_technology": {
-			"type": "number",
-			"info": {
-				"label": "Технология строительства",
-				"type": "select",
-				"options": {
-					"1": "каркасно-монолитная",
-					"2": "кирпичная",
-					"3": "панельная",
-					"4": "объёмно-блочная"
-				}
-			}
-		},
-		"material_outer_walls": {
-			"type": "number",
-			"info": {
-				"label": "Материал внешних стен",
-				"type": "select",
-				"options": {
-					"1": "Блок газобетонный",
-					"2": "Блок керамзитобетонный",
-					"3": "Блок пенобетонный",
-					"4": "Железобетон",
-					"5": "Железобетон с несъёмной опалубкой",
-					"6": "Кирпич",
-					"7": "Панель"
-				}
-			}
-		},
-		"exterior_finish": {
-			"type": "number",
-			"info": {
-				"label": "Наружная отделка",
-				"type": "select",
-				"options": {
-					"1": "Вентилируемый фасад",
-					"2": "Декоративный камень",
-					"3": "Комбинированная оригинальная отделка",
-					"4": "Покраска",
-					"5": "Сайдинг",
-					"6": "Фасадный (облицовочный) кирпич",
-					"7": "Штукатурка"
-				}
-			}
-		},
-		"interior_finish": {
-			"type": "number",
-			"info": {
-				"label": "Внутренняя отделка",
-				"type": "select",
-				"options": {
-					"1": "без отделки",
-					"2": "стяжка-штукатурка",
-					"3": "под чистовую",
-					"4": "под ключ"
-				}
-			}
-		},
-		"sections_count": {
-			"type": "number",
-			"info": {
-				"label": "Количество секций"
-			}
-		},
-		"elevators_count": {
-			"type": "number",
-			"info": {
-				"label": "Количество лифтов в секции"
-			}
-		},
-
-
-		"non_residential_area": {
-			"type": "string",
-			"info": {
-				"label": "Площадь нежилых помещений"
-			}
-		},
-		"non_residential_area0": {
-			"type": "string",
-			"info": {
-				"label": "Площадь нежилых помещений в цоколе"
-			}
-		},
-		"non_residential_area1": {
-			"type": "string",
-			"info": {
-				"label": "Площадь нежилых помещений на 1 этаже"
-			}
-		},
-		"non_residential_area2": {
-			"type": "string",
-			"info": {
-				"label": "Площадь нежилых помещений на 2 этаже"
-			}
-		},
-		"non_residential_height": {
-			"type": "string",
-			"info": {
-				"label": "Высота потолков в нежилых помещениях"
-			}
-		},
-
-
-		"total_floor_flats": {
-			"type": "number",
-			"info": {
-				"label": "Общая площадь всех квартир"
-			}
-		},
-		"total_flats": {
-			"type": "number",
-			"info": {
-				"label": "Всего квартир"
-			}
-		},
-		"floor_flats1_min_max": {
-			"type": "string",
-			"info": {
-				"label": "Площадь 1к кв, min-max"
-			}
-		},
-		"floor_flats2_min_max": {
-			"type": "string",
-			"info": {
-				"label": "Площадь 2к кв, min-max"
-			}
-		},
-		"floor_flats3_min_max": {
-			"type": "string",
-			"info": {
-				"label": "Площадь 3к кв, min-max"
-			}
-		},
-		"floor_flats4_min_max": {
-			"type": "string",
-			"info": {
-				"label": "Площадь 4к кв, min-max"
-			}
-		},
-		"flats_height": {
-			"type": "string",
-			"info": {
-				"label": "Высота потолков в квартирах"
-			}
-		},
-		"penthouse_count": {
-			"type": "number",
-			"info": {
-				"label": "Количество пентхаусов"
-			}
-		},
-		"floor_penthouse_min_max": {
-			"type": "string",
-			"info": {
-				"label": "Площадь пентхаусов, min-max"
-			}
-		},
-		"penthouse_height": {
-			"type": "string",
-			"info": {
-				"label": "Высота потолков в пентхаусах"
-			}
-		},
-		"value_of_apartments": {
-			"type": "string",
-			"info": {
-				"label": "Соотношение квартир"
-			}
-		},
-
-
-		"object_condition": {
-			"type": "number",
-			"info": {
-				"label": "Состояние объекта",
-				"type": "select",
-				"options": {
-					"1": "Введен в эксплуатацию",
-					"2": "Стадия проекта",
-					"3": "Стадия строительства",
-					"4": "Строительство заморожено"
-				}
-			}
-		},
-		"readiness": {
-			"type": "number",
-			"info": {
-				"label": "Степень готовности",
-				"type": "select",
-				"options": {
-					"1": "низкая (до 30% готовности объекта)",
-					"2": "средняя (от 30% до 70% готовности объекта)",
-					"3": "высокая (от 70% готовности объекта)",
-					"4": "сдан в эксплуатацию"
-				}
-			}
-		},
-		"building_speed": {
-			type: "string",
-			label: "Темпы строительства",
-			widget:'select',
-			options: {
-				"1": "низкие",
-				"2": "средние",
-				"3": "высокие",
-				"4": "заморожено"
-			}
-		},
-		"levels_completed": {
-			"type": "number",
-			"info": {
-				"label": "Возведено этажей"
-			}
-		},
-		"time_changed": {
-			"type": "number",
-			"info": {
-				"label": "Время изменения материала"
-			}
-		},
-		"archive": {
-			"type": "number",
-			"info": {
-				"label": "Архив"
-			}
-		},
-		"public": {
-			"type": "number",
-			"info": {
-				"label": "Публичный"
-			}
-		},
-		"demo_available": {
-			"type": "number",
-			"info": {
-				"label": "Доступно в демо"
-			}
-		},
-		"banner": {
-			"type": "number",
-			"info": {
-				"label": "На баннере"
-			}
-		},
-		"credit": {
-			"type": "number",
-			"info": {
-				"label": "Ипотека ВТБ"
-			}
-		},
-		"latitude": {
-			"type": "string",
-			"info": {
-				"label": "широта"
-			}
-		},
-		"longitude": {
-			"type": "string",
-			"info": {
-				"label": "долгота"
-			}
-		},
-		"rooms_business": {
-			"type": "array",
-			"items": {
-				"type": "object",
-				"properties": {
-					"floor_list": {
-						"type": "any",
-						"info": {
-							"label": "Этаж",
-							"type": "select",
-							"options": {
-								"0": "цоколь",
-								"1": "1 этаж",
-								"2": "2 и более этаж"
-							}
-						}
-					},
-					"price_m2": {
-						"type": "number",
-						"info": {
-							"label": "Цена за м<sup>2</sup>"
-						}
-					}
-				}
-			},
-			info: {
-				label: 'Помещения для бизнеса'
-			}
-		},
-		rooms_car: {
-			type: "array",
-			items: {
-				type: "object",
-				properties: {
-					price: {
-						type: "number",
-						info: {
-							label: "Цена"
-						}
-					},
-					car_place_type: {
-						type: "any",
-						info: {
-							label: "Тип машиноместа",
-							type: "select",
-							options: {
-								"1": "Одинарное",
-								"2": "Двойное"
-							}
-						}
-					},
-					car_place_size: {
-						type: "any",
-						info: {
-							label: "Размер машиноместа",
-							type: "select",
-							options: {
-								"5": "стандартный",
-								"1": "авто класса джип",
-								"2": "авто среднего класса",
-								"3": "авто малого класса",
-								"4": "место для мотоцикла"
-							}
-						}
-					}
-				}
-			},
-			info: {
-				label: 'Машиноместа'
 			}
 		}
 	}
@@ -628,13 +67,8 @@ var schema = {
 var item = new SchemaItem(schema);
 
 $('.test').append(item.form({
-	complex_title: {
-		body: 'asfsdfghdghf'
-	},
-	rooms: [{
-		rooms_count: '123123',
-		square: 34234
-	}]
+	foo: 'azaza',
+	arr: ['bla', 'yarrrr']
 }));
 
 $('.test').on('change', 'input, select, textarea', function(){
