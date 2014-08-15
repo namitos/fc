@@ -112,7 +112,7 @@
 		wrapper.appendChild(el);
 	}
 
-	function makeRow(objPart, schema, wrapper, i, namePrefix) {
+	function makeRow(objPart, schema, i, namePrefix) {
 		var row = schema.items.form(objPart, i, namePrefix);
 		var btn = makeEl('button', {
 			'class': 'btn remove'
@@ -128,7 +128,7 @@
 			this.parentNode.parentNode.removeChild(this.parentNode);
 		}, false);
 		row.appendChild(btn);
-		wrapper.appendChild(row);
+		return row;
 	}
 
 	SchemaItem.prototype.form = function (obj, name, namePrefix) {
@@ -143,8 +143,12 @@
 		}
 		if (!name) {
 			wrapper.classList.add('object-root');
-			var event = new CustomEvent('changeObj', { detail: wrapper.obj });
 			wrapper.changeObj = function () {
+				var event = new CustomEvent('changeObj', { detail: wrapper.obj });
+				this.dispatchEvent(event);
+			};
+			wrapper.changeObjArrayAdd = function (data) {
+				var event = new CustomEvent('changeObjArrayAdd', { detail: data });
 				this.dispatchEvent(event);
 			};
 		}
@@ -161,7 +165,8 @@
 			if (obj instanceof Array) {
 				wrapper.itemsCount = obj.length;
 				obj.forEach(function (objPart, key) {
-					makeRow(objPart, schema, items, key.toString(), name);
+					var row = makeRow(objPart, schema, key.toString(), name);
+					items.appendChild(row);
 				});
 			}
 			wrapper.appendChild(items);
@@ -181,8 +186,10 @@
 				var items = this.previousSibling;
 				var newObj = {};
 				this.parentNode.obj.push(newObj);
-				makeRow(newObj, this.parentNode.schema, items, wrapper.itemsCount.toString(), name);
+				var row = makeRow(newObj, this.parentNode.schema, wrapper.itemsCount.toString(), name);
 				wrapper.itemsCount++;
+				items.appendChild(row);
+				closest(this, '.object-root').changeObjArrayAdd(row);
 			}, false);
 
 		} else if (schema.type == 'object') {
@@ -202,7 +209,7 @@
 						objPart = {};
 					} else if (schemaPart.type == 'string') {
 						objPart = '';
-					} else if (schemaPart.type == 'number') {
+					} else if (schemaPart.type == 'number' || schemaPart.type == 'integer' || schemaPart.type == 'boolean') {
 						objPart = 0;
 					}
 					obj[key] = objPart;

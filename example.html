@@ -85,18 +85,23 @@ var schema = {
 
 var item = new SchemaItem(schema);
 
-$('.test').append(item.form({
+document.querySelector('.test').appendChild(item.form({
 	foo: 'azaza',
 	arr: ['bla', 'yarrrr']
 }));
 
-
 document.querySelector('.test > .object').addEventListener('changeObj', function (e) {
-	console.log('vanilla', e.detail);
+	console.log('vanilla changeObj', e.detail);
+}, false);
+document.querySelector('.test > .object').addEventListener('changeObjArrayAdd', function (e) {
+	console.log('vanilla changeObjArrayAdd', e.detail);
 }, false);
 
 $('.test > .object').on('changeObj', function(e){
-	console.log('jQuery', e.originalEvent.detail);
+	console.log('jQuery changeObj', e.originalEvent.detail);
+});
+$('.test > .object').on('changeObjArrayAdd', function(e){
+	console.log('jQuery changeObjArrayAdd', e.originalEvent.detail);
 });
 
 
