@@ -1,6 +1,17 @@
 (function(global){
 	"use strict";
+	//@TODO: сделать кастомное дом событие changeObj, на которое будет подписываться юзер, которое будет эмититься, когда корневой обьект изменён
 
+	function closest(elem, selector) {
+		while (elem) {
+			if (elem.matches(selector)) {
+				return elem;
+			} else {
+				elem = elem.parentNode;
+			}
+		}
+		return false;
+	}
 	function SchemaItem(schema){
 		_.merge(this, schema);
 		if(schema.type == 'object'){
@@ -95,10 +106,9 @@
 				parent = this.parentNode.parentNode.parentNode;
 			}
 			parent.obj[name] = this.value;
+			closest(this, '.object-root').changeObj();
 		});
-		el.addEventListener('keyup', function(){
 
-		});
 		wrapper.appendChild(el);
 	}
 
@@ -123,23 +133,20 @@
 
 	SchemaItem.prototype.form = function(obj, name, namePrefix) {
 		var schema = this;
-		if(!obj){
-			if(schema.type == 'array'){
-				obj = [];
-			} else if (schema.type == 'object'){
-				obj = {};
-			} else {
-				obj = '';
-			}
-		}
 		if(schema.type == 'array' && !obj instanceof Array){
 			obj = [];
 		}
-
 		var wrapper = makeEl('div');
 		wrapper.obj = obj;
 		if(schema.label) {
 			wrapper.appendChild(makeEl('label', {}, schema.label));
+		}
+		if(!name){
+			wrapper.classList.add('object-root');
+			var event = new CustomEvent('changeObj', { detail: wrapper.obj });
+			wrapper.changeObj = function(){
+				this.dispatchEvent(event);
+			};
 		}
 		if(schema.type == 'array') {
 			wrapper.classList.add('array');

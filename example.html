@@ -90,7 +90,14 @@ $('.test').append(item.form({
 	arr: ['bla', 'yarrrr']
 }));
 
-$('.test').on('change', 'input, select, textarea', function(){
-	console.log($('.test > .object')[0].obj);
+
+document.querySelector('.test > .object').addEventListener('changeObj', function (e) {
+	console.log('vanilla', e.detail);
+}, false);
+
+$('.test > .object').on('changeObj', function(e){
+	console.log('jQuery', e.originalEvent.detail);
 });
+
+
 </script>
