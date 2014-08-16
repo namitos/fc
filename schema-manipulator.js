@@ -1,9 +1,9 @@
 (function (global) {
 	"use strict";
 
-	function closest(elem, selector) {
+	function closest(elem, cls) {
 		while (elem) {
-			if (elem.matches(selector)) {
+			if (elem.classList.contains(cls)) {
 				return elem;
 			} else {
 				elem = elem.parentNode;
@@ -106,7 +106,7 @@
 				parent = this.parentNode.parentNode.parentNode;
 			}
 			parent.obj[name] = this.value;
-			closest(this, '.object-root').changeObj();
+			closest(this, 'object-root').changeObj();
 		});
 
 		wrapper.appendChild(el);
@@ -189,7 +189,7 @@
 				var row = makeRow(newObj, this.parentNode.schema, wrapper.itemsCount.toString(), name);
 				wrapper.itemsCount++;
 				items.appendChild(row);
-				closest(this, '.object-root').changeObjArrayAdd(row);
+				closest(this, 'object-root').changeObjArrayAdd(row);
 			}, false);
 
 		} else if (schema.type == 'object') {
