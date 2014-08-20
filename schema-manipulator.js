@@ -45,6 +45,18 @@
 		return el;
 	}
 
+	function changeField() {
+		console.log('changed', this.value, this);
+		var parent;
+		if (this.parentNode.parentNode.classList.contains('object')) {
+			parent = this.parentNode.parentNode;
+		} else {
+			parent = this.parentNode.parentNode.parentNode;
+		}
+		parent.obj[name] = this.value;
+		closest(this, 'object-root').changeObj();
+	}
+
 	function makeInput(obj, schema, wrapper, name, namePrefix) {
 		var obj = obj instanceof Object ? '' : obj;
 		wrapper.classList.add('form-group');
@@ -98,15 +110,9 @@
 			el.classList.add('widget-' + schema.widget);
 		}
 		el.value = obj;
+		el.changeField = changeField;
 		el.addEventListener('change', function () {
-			var parent;
-			if (this.parentNode.parentNode.classList.contains('object')) {
-				parent = this.parentNode.parentNode;
-			} else {
-				parent = this.parentNode.parentNode.parentNode;
-			}
-			parent.obj[name] = this.value;
-			closest(this, 'object-root').changeObj();
+			this.changeField();
 		});
 
 		wrapper.appendChild(el);
