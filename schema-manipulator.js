@@ -53,7 +53,7 @@
 		} else {
 			parent = this.parentNode.parentNode.parentNode;
 		}
-		parent.obj[name] = this.value;
+		parent.obj[this.name] = this.value;
 		closest(this, 'object-root').changeObj();
 	}
 
