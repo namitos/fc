@@ -34,6 +34,28 @@ var schema = {
 			type: 'integer',
 			label:'sample integer'
 		},
+		foo5: {
+			type: 'integer',
+			label:'sample integer select',
+			widget: 'select',
+			options:{
+				1: 'sdsdds',
+				2: 'ddddfff'
+			}
+		},
+		file: {
+			type: 'string',
+			label:'sample base64 file',
+			widget: 'base64File'
+		},
+		fileMultiple: {
+			type: 'string',
+			label:'sample base64 file multiple',
+			widget: 'base64File',
+			attributes:{
+				multiple: true
+			}
+		},
 		foo3: {
 			type: 'object',
 			label:'sample nested object',
@@ -76,6 +98,15 @@ var schema = {
 					foo2: {
 						type: 'integer',
 						label:'sample integer'
+					},
+					file: {
+						type: 'string',
+						label:'sample base64 file',
+						widget: 'base64File',
+						attributes:{
+							multiple: true
+						}
+
 					}
 				}
 			}
@@ -83,9 +114,7 @@ var schema = {
 	}
 };
 
-var item = new SchemaItem(schema);
-
-document.querySelector('.test').appendChild(item.form({
+document.querySelector('.test').appendChild(fc(schema, {
 	foo: 'azaza',
 	arr: ['bla', 'yarrrr']
 }));

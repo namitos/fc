@@ -1,8 +1,8 @@
 {
-	"name": "sm",
-	"version": "0.1",
+	"name": "fc",
+	"version": "1.0",
 	"private": false,
-	"main": "schema-manipulator.js",
+	"main": "fc.js",
 	"dependencies": {
 		"lodash": "2.x"
 	},

@@ -12,17 +12,14 @@
 		return false;
 	}
 
-	function SchemaItem(schema) {
+	function Schema(schema) {
 		_.merge(this, schema);
 		if (schema.type == 'object') {
 			for (var key in schema.properties) {
-				this.properties[key] = new SchemaItem(schema.properties[key]);
+				this.properties[key] = new Schema(schema.properties[key]);
 			}
 		} else if (schema.type == 'array') {
-			this.items = new SchemaItem(this.items);
-
-		} else if (schema.type == 'string' || schema.type == 'integer' || schema.type == 'number') {
-
+			this.items = new Schema(this.items);
 		}
 	}
 
@@ -46,15 +43,38 @@
 	}
 
 	function changeField() {
-		console.log('changed', this.value, this);
 		var parent;
-		if (this.parentNode.parentNode.classList.contains('object')) {
-			parent = this.parentNode.parentNode;
+		var input = this;
+		var nameParts = input.name.split('.');
+		var namePart = nameParts[nameParts.length - 1];
+		if (input.parentNode.parentNode.classList.contains('object')) {
+			parent = input.parentNode.parentNode;
 		} else {
-			parent = this.parentNode.parentNode.parentNode;
+			parent = input.parentNode.parentNode.parentNode;
 		}
-		parent.obj[this.name] = this.value;
-		closest(this, 'object-root').changeObj();
+		if(input.schema.widget && input.schema.widget == 'base64File'){
+			var filesLoadCounter = 0;
+			var filesLoaded = [];
+			var filesCount = input.files.length;
+			for (var i = 0; i < input.files.length; ++i) {
+				(function(){
+					var file = input.files[i];
+					var reader = new FileReader();
+					reader.onload = function (a) {
+						filesLoaded[filesLoadCounter] = a.target.result;
+						filesLoadCounter++;
+						if(filesLoadCounter == filesCount){
+							parent.obj[namePart] = filesLoaded;
+							closest(input, 'object-root').changeObj();
+						}
+					};
+					reader.readAsDataURL(file);
+				})()
+			}
+		} else {
+			parent.obj[namePart] = input.value;
+			closest(input, 'object-root').changeObj();
+		}
 	}
 
 	function makeInput(obj, schema, wrapper, name, namePrefix) {
@@ -62,7 +82,13 @@
 		wrapper.classList.add('form-group');
 		wrapper.classList.add('input-' + name);
 		var attributes = schema.attributes || {};
-		if (schema.type == 'string' || schema.type == 'number' || schema.type == 'any') {
+		var primitivesToInputs = {
+			string: 'text',
+			number: 'number',
+			integer: 'number',
+			any: 'file'
+		};
+		if (schema.type == 'string' || schema.type == 'number' || schema.type == 'integer' || schema.type == 'any') {
 			if (schema.widget) {
 				if (schema.widget == 'textarea') {
 					var el = makeEl('textarea');
@@ -77,28 +103,27 @@
 						el.appendChild(option);
 					});
 
-				} else if (schema.widget == 'file') {
+				} else if (schema.widget == 'file' || schema.widget == 'base64File') {
 					var el = makeEl('input', {
 						type: 'file'
 					});
 
 				} else {
 					var el = makeEl('div', {
-						class: 'alert alert-info'
+						'class': 'alert alert-info'
 					});
 					el.innerHTML = "widget type " + schema.widget + " is not supported";
 				}
 			} else {
 				var el = makeEl('input', {
-					type: 'text'
+					type: primitivesToInputs[schema.type]
 				});
-
 			}
-
-		} else if (schema.type == 'integer') {
-			var el = makeEl('input', {
-				type: 'number'
+		} else {
+			var el = makeEl('div', {
+				'class': 'alert alert-info'
 			});
+			el.innerHTML = "data type " + schema.type + " is not supported";
 		}
 
 		attributes.name = name ? (namePrefix ? [namePrefix, name].join('.') : name) : '';
@@ -114,7 +139,7 @@
 		el.addEventListener('change', function () {
 			this.changeField();
 		});
-
+		el.schema = schema;
 		wrapper.appendChild(el);
 	}
 
@@ -137,7 +162,7 @@
 		return row;
 	}
 
-	SchemaItem.prototype.form = function (obj, name, namePrefix) {
+	Schema.prototype.form = function (obj, name, namePrefix) {
 		var schema = this;
 		if (schema.type == 'array' && !obj instanceof Array) {
 			obj = [];
@@ -235,16 +260,23 @@
 		return wrapper;
 	};
 
+	function fc(schema, obj) {
+		if(typeof obj == 'undefined') {
+			obj = {};
+		}
+		return (new Schema(schema)).form(obj);
+	}
+
 	var defineAsGlobal = true;
 	if (typeof exports === 'object') {
-		module.exports = SchemaItem;
+		module.exports = fc;
 		defineAsGlobal = false;
 	}
 	if (typeof define === 'function') {
 		define(function (require, exports, module) {
-			module.exports = SchemaItem;
+			module.exports = fc;
 		});
 		defineAsGlobal = false;
 	}
-	defineAsGlobal && (global.SchemaItem = SchemaItem);
+	defineAsGlobal && (global.fc = fc);
 })(this);
