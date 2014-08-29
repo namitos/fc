@@ -1,10 +1,5 @@
-Schema Manipulator
+Form Constructor
 ========
 
-Утилита для работы со схемами.
-
-Умеет строить формы из них и пишет изменения в корневой объект.
-
-Валидация скорее всего будет через revalidator.
-
-Пример в файле example.html
+Form construction util. Uses schemas compatible with [Revalidator](https://github.com/flatiron/revalidator).
+Examples you can view in [example.html](https://github.com/namitos/fc/blob/master/example.html). Enjoy :)
