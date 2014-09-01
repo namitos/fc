@@ -6,6 +6,6 @@
 	"dependencies": {
 		"lodash": "2.x"
 	},
-	"keywords": ["form", "constructor", "file", "upload", "schema"],
+	"keywords": ["form", "constructor", "builder", "file", "upload", "schema"],
 	"ignore": []
 }
