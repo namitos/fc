@@ -1,10 +1,11 @@
 {
 	"name": "fc",
-	"version": "1.0",
+	"version": "1.0.0",
 	"private": false,
 	"main": "fc.js",
 	"dependencies": {
 		"lodash": "2.x"
 	},
+	"keywords": ["form", "constructor", "file", "upload", "schema"],
 	"ignore": []
 }
