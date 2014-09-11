@@ -1,6 +1,30 @@
 (function (global) {
 	"use strict";
 
+	//IE 10-11 events polyfill
+	if(navigator.userAgent.toLowerCase().match(/trident/)){
+		var CustomEvent = function(event, params) {
+			params = params || { bubbles: false, cancelable: false, detail: undefined };
+			var evt = document.createEvent('CustomEvent');
+			evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+			return evt;
+		};
+		CustomEvent.prototype = window.Event.prototype;
+	} else {
+		var CustomEvent = global.CustomEvent;
+	}
+
+	function forEach(obj, fn){
+		for(var key in obj){
+			fn(obj[key], key);
+		}
+	}
+	function merge(obj, otherObj){
+		forEach(otherObj, function(val, key){
+			obj[key] = val;
+		});
+	}
+
 	function closest(elem, cls) {
 		while (elem) {
 			if (elem.classList.contains(cls)) {
@@ -11,21 +35,10 @@
 		}
 		return false;
 	}
-
-	function Schema(schema) {
-		_.merge(this, schema);
-		if (schema.type == 'object') {
-			for (var key in schema.properties) {
-				this.properties[key] = new Schema(schema.properties[key]);
-			}
-		} else if (schema.type == 'array') {
-			this.items = new Schema(this.items);
-		}
-	}
-
+	
 	function makeEl(tagname, attributes, children) {
 		var el = document.createElement(tagname);
-		_.forEach(attributes, function (val, key) {
+		forEach(attributes, function (val, key) {
 			el.setAttribute(key, val);
 		});
 		if (children) {
@@ -96,7 +109,7 @@
 				} else if (schema.widget == 'select') {
 					var el = makeEl('select');
 					el.appendChild(makeEl('option'));
-					_.forEach(schema.options, function (val, key) {
+					forEach(schema.options, function (val, key) {
 						var option = makeEl('option');
 						option.setAttribute('value', key);
 						option.innerHTML = val;
@@ -127,7 +140,7 @@
 		}
 
 		attributes.name = name ? (namePrefix ? [namePrefix, name].join('.') : name) : '';
-		_.forEach(attributes, function (val, key) {
+		forEach(attributes, function (val, key) {
 			el.setAttribute(key, val);
 		});
 		el.classList.add('form-control');
@@ -160,6 +173,17 @@
 		}, false);
 		row.appendChild(btn);
 		return row;
+	}
+
+	function Schema(schema) {
+		merge(this, schema);
+		if (schema.type == 'object') {
+			for (var key in schema.properties) {
+				this.properties[key] = new Schema(schema.properties[key]);
+			}
+		} else if (schema.type == 'array') {
+			this.items = new Schema(this.items);
+		}
 	}
 
 	Schema.prototype.form = function (obj, name, namePrefix) {
@@ -231,7 +255,7 @@
 			if (namePrefix) {
 				name = [namePrefix, name].join('.');
 			}
-			_.forEach(schema.properties, function (schemaPart, key) {
+			forEach(schema.properties, function (schemaPart, key) {
 				if (!obj.hasOwnProperty(key)) {
 					var objPart;
 					if (schemaPart.type == 'array') {
