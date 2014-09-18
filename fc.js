@@ -158,6 +158,7 @@
 
 	function makeRow(objPart, schema, i, namePrefix) {
 		var row = schema.items.form(objPart, i, namePrefix);
+		row.i = i;
 		var btn = makeEl('button', {
 			'class': 'btn remove'
 		}, [
@@ -169,7 +170,10 @@
 			}, 'Remove item')
 		]);
 		btn.addEventListener('click', function () {
+			var root = closest(this, 'object-root');
+			delete this.parentNode.parentNode.parentNode.obj[this.parentNode.i];
 			this.parentNode.parentNode.removeChild(this.parentNode);
+			root.changeObj();
 		}, false);
 		row.appendChild(btn);
 		return row;
