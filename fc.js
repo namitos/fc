@@ -2,8 +2,8 @@
 	"use strict";
 
 	//IE 10-11 events polyfill
-	if(navigator.userAgent.toLowerCase().match(/trident/)){
-		var CustomEvent = function(event, params) {
+	if (navigator.userAgent.toLowerCase().match(/trident/)) {
+		var CustomEvent = function (event, params) {
 			params = params || { bubbles: false, cancelable: false, detail: undefined };
 			var evt = document.createEvent('CustomEvent');
 			evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
@@ -14,13 +14,14 @@
 		var CustomEvent = global.CustomEvent;
 	}
 
-	function forEach(obj, fn){
-		for(var key in obj){
+	function forEach(obj, fn) {
+		for (var key in obj) {
 			fn(obj[key], key);
 		}
 	}
-	function merge(obj, otherObj){
-		forEach(otherObj, function(val, key){
+
+	function merge(obj, otherObj) {
+		forEach(otherObj, function (val, key) {
 			obj[key] = val;
 		});
 	}
@@ -35,7 +36,7 @@
 		}
 		return false;
 	}
-	
+
 	function makeEl(tagname, attributes, children) {
 		var el = document.createElement(tagname);
 		forEach(attributes, function (val, key) {
@@ -65,18 +66,18 @@
 		} else {
 			parent = input.parentNode.parentNode.parentNode;
 		}
-		if(input.schema.widget && input.schema.widget == 'base64File'){
+		if (input.schema.widget && input.schema.widget == 'base64File') {
 			var filesLoadCounter = 0;
 			var filesLoaded = [];
 			var filesCount = input.files.length;
 			for (var i = 0; i < input.files.length; ++i) {
-				(function(){
+				(function () {
 					var file = input.files[i];
 					var reader = new FileReader();
 					reader.onload = function (a) {
 						filesLoaded[filesLoadCounter] = a.target.result;
 						filesLoadCounter++;
-						if(filesLoadCounter == filesCount){
+						if (filesLoadCounter == filesCount) {
 							parent.obj[namePart] = filesLoaded;
 							closest(input, 'object-root').changeObj();
 						}
@@ -147,7 +148,10 @@
 		if (schema.widget) {
 			el.classList.add('widget-' + schema.widget);
 		}
-		el.value = obj;
+		if (el.type != 'file') {
+			el.value = obj;
+		}
+
 		el.changeField = changeField;
 		el.addEventListener('change', function () {
 			this.changeField();
@@ -289,7 +293,7 @@
 	};
 
 	function fc(schema, obj) {
-		if(typeof obj == 'undefined') {
+		if (typeof obj == 'undefined') {
 			obj = {};
 		}
 		return (new Schema(schema)).form(obj);
