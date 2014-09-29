@@ -164,7 +164,8 @@
 		var row = schema.items.form(objPart, i, namePrefix);
 		row.i = i;
 		var btn = makeEl('button', {
-			'class': 'btn remove'
+			'class': 'btn remove',
+			'type': 'button'
 		}, [
 			makeEl('span', {
 				'class': 'glyphicon glyphicon-remove'
@@ -235,7 +236,8 @@
 			wrapper.appendChild(items);
 
 			var btn = makeEl('button', {
-				'class': 'btn add'
+				'class': 'btn add',
+				'type': 'button'
 			}, [
 				makeEl('span', {
 					'class': 'glyphicon glyphicon-plus'
