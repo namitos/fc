@@ -133,6 +133,9 @@
 					type: primitivesToInputs[schema.type]
 				});
 			}
+			if (schema.hasOwnProperty('required') && schema.required) {
+				el.setAttribute('required', true);
+			}
 		} else {
 			var el = makeEl('div', {
 				'class': 'alert alert-info'
