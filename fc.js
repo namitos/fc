@@ -252,7 +252,7 @@
 			wrapper.appendChild(btn);
 			btn.addEventListener("click", function () {
 				var items = this.previousSibling;
-				var newObj = {};
+				var newObj = this.parentNode.schema.type == 'object' ? {} : '';
 				this.parentNode.obj.push(newObj);
 				var row = makeRow(newObj, this.parentNode.schema, wrapper.itemsCount.toString(), name);
 				wrapper.itemsCount++;
