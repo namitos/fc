@@ -98,13 +98,13 @@
 		var attributes = schema.attributes || {};
 		var primitivesToInputs = {
 			string: 'text',
-			number: 'text',
+			number: 'number',
 			integer: 'number',
-			any: 'text'
+			any: 'file'
 		};
 		if (schema.type == 'string' || schema.type == 'number' || schema.type == 'integer' || schema.type == 'any') {
 			if (schema.widget) {
-				if (schema.widget == 'textarea' || schema.widget == 'code' || schema.widget == 'wysiwyg') {
+				if (schema.widget == 'textarea') {
 					var el = makeEl('textarea');
 
 				} else if (schema.widget == 'select') {
@@ -317,4 +317,3 @@
 	}
 	defineAsGlobal && (global.fc = fc);
 })(this);
-
