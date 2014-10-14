@@ -253,9 +253,9 @@
 			btn.addEventListener("click", function () {
 				var items = this.previousSibling;
 				var newObj = '';
-				if(this.parentNode.schema.type == 'array'){
+				if(this.parentNode.schema.items.type == 'array'){
 					newObj = [];
-				} else if(this.parentNode.schema.type == 'object'){
+				} else if(this.parentNode.schema.items.type == 'object'){
 					newObj = {};
 				}
 				this.parentNode.obj.push(newObj);
@@ -322,4 +322,5 @@
 	}
 	defineAsGlobal && (global.fc = fc);
 })(this);
+
 
