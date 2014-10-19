@@ -26,9 +26,23 @@
 		});
 	}
 
+	function containsAnyClass(elem, classList) {
+		var contains = false;
+		if(classList instanceof Array) {
+			classList.forEach(function(cls) {
+				if(!contains) {
+					contains = elem.classList.contains(cls);
+				}
+			});
+		} else {
+			contains = elem.classList.contains(classList);
+		}
+		return contains;
+	}
+
 	function closest(elem, cls) {
 		while (elem) {
-			if (elem.classList.contains(cls)) {
+			if (containsAnyClass(elem, cls)) {
 				return elem;
 			} else {
 				elem = elem.parentNode;
@@ -57,15 +71,10 @@
 	}
 
 	function changeField() {
-		var parent;
 		var input = this;
+		var parent = closest(input, ['object', 'array']);
 		var nameParts = input.name.split('.');
 		var namePart = nameParts[nameParts.length - 1];
-		if (input.parentNode.parentNode.classList.contains('object')) {
-			parent = input.parentNode.parentNode;
-		} else {
-			parent = input.parentNode.parentNode.parentNode;
-		}
 		if (input.schema.widget && input.schema.widget == 'base64File') {
 			var filesLoadCounter = 0;
 			var filesLoaded = [];
@@ -92,7 +101,6 @@
 	}
 
 	function makeInput(obj, schema, wrapper, name, namePrefix) {
-		var obj = obj instanceof Object ? '' : obj;
 		wrapper.classList.add('form-group');
 		wrapper.classList.add('input-' + name);
 		var attributes = schema.attributes || {};
@@ -160,6 +168,59 @@
 			this.changeField();
 		});
 		el.schema = schema;
+
+		if (schema.widget == 'file' || schema.widget == 'base64File') {
+			var list = makeEl('div', {
+				'class': 'list'
+			});
+			var input = el;
+			el = makeEl('div', {
+				'class': 'input-file-inner'
+			}, [ list, input ]);
+			if(obj instanceof Array) {
+				if(schema.fileView instanceof Function){
+					var fileView = schema.fileView;
+				} else {
+					var fileView = function(item){
+						var nameParts = item.split('/');
+						return makeEl('a', {
+							'href': '/' + item,
+							target: '_blank'
+						}, nameParts[nameParts.length - 1].slice(0, 10));
+					}
+				}
+				obj.forEach(function(item, i){
+					var removeBtn = makeEl('button', {
+						type: 'button',
+						'class': 'btn remove'
+					}, [
+						makeEl('span', {
+							'class': 'glyphicon glyphicon-remove'
+						}),
+						makeEl('span', {
+							'class': 'text'
+						}, 'Remove file')
+					]);
+					removeBtn.addEventListener('click', function () {
+						var itemEl = closest(this, 'item');
+						var objEl = closest(this, 'object');
+						var nameParts = input.name.split('.');
+						var namePart = nameParts[nameParts.length - 1];
+						delete objEl.obj[namePart][itemEl.i];
+						itemEl.parentNode.removeChild(itemEl);
+						closest(this, 'object-root').changeObj();
+					}, false);
+					var itemEl = makeEl('span', {
+						'class': 'item'
+					}, [
+						makeEl('span', { 'class': 'content' }, fileView(item)),
+						removeBtn
+					]);
+					itemEl.i = i;
+					list.appendChild(itemEl);
+				});
+			}
+		}
 		wrapper.appendChild(el);
 	}
 
@@ -322,5 +383,4 @@
 	}
 	defineAsGlobal && (global.fc = fc);
 })(this);
-
 
