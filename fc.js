@@ -4,7 +4,7 @@
 	//IE 10-11 events polyfill
 	if (navigator.userAgent.toLowerCase().match(/trident/)) {
 		var CustomEvent = function (event, params) {
-			params = params || { bubbles: false, cancelable: false, detail: undefined };
+			params = params || {bubbles: false, cancelable: false, detail: undefined};
 			var evt = document.createEvent('CustomEvent');
 			evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
 			return evt;
@@ -28,9 +28,9 @@
 
 	function containsAnyClass(elem, classList) {
 		var contains = false;
-		if(classList instanceof Array) {
-			classList.forEach(function(cls) {
-				if(!contains) {
+		if (classList instanceof Array) {
+			classList.forEach(function (cls) {
+				if (!contains) {
 					contains = elem.classList.contains(cls);
 				}
 			});
@@ -118,10 +118,22 @@
 				} else if (schema.widget == 'select') {
 					var el = makeEl('select');
 					el.appendChild(makeEl('option'));
+					var kv = [];
 					forEach(schema.options, function (val, key) {
+						kv.push({
+							key: key,
+							val: val
+						});
+					});
+					kv.sort(function (a, b) {
+						if (a.val > b.val) return 1;
+						if (a.val < b.val) return -1;
+						return 0;
+					});
+					kv.forEach(function (row) {
 						var option = makeEl('option');
-						option.setAttribute('value', key);
-						option.innerHTML = val;
+						option.setAttribute('value', row.key);
+						option.innerHTML = row.val;
 						el.appendChild(option);
 					});
 
@@ -176,12 +188,12 @@
 			var input = el;
 			el = makeEl('div', {
 				'class': 'input-file-inner'
-			}, [ list, input ]);
-			if(obj instanceof Array) {
-				if(schema.fileView instanceof Function){
+			}, [list, input]);
+			if (obj instanceof Array) {
+				if (schema.fileView instanceof Function) {
 					var fileView = schema.fileView;
 				} else {
-					var fileView = function(item){
+					var fileView = function (item) {
 						var nameParts = item.split('/');
 						return makeEl('a', {
 							'href': '/' + item,
@@ -189,7 +201,7 @@
 						}, nameParts[nameParts.length - 1].slice(0, 10));
 					}
 				}
-				obj.forEach(function(item, i){
+				obj.forEach(function (item, i) {
 					var removeBtn = makeEl('button', {
 						type: 'button',
 						'class': 'btn remove'
@@ -213,7 +225,7 @@
 					var itemEl = makeEl('span', {
 						'class': 'item'
 					}, [
-						makeEl('span', { 'class': 'content' }, fileView(item)),
+						makeEl('span', {'class': 'content'}, fileView(item)),
 						removeBtn
 					]);
 					itemEl.i = i;
@@ -272,11 +284,11 @@
 		if (!name) {
 			wrapper.classList.add('object-root');
 			wrapper.changeObj = function () {
-				var event = new CustomEvent('changeObj', { detail: wrapper.obj });
+				var event = new CustomEvent('changeObj', {detail: wrapper.obj});
 				this.dispatchEvent(event);
 			};
 			wrapper.changeObjArrayAdd = function (data) {
-				var event = new CustomEvent('changeObjArrayAdd', { detail: data });
+				var event = new CustomEvent('changeObjArrayAdd', {detail: data});
 				this.dispatchEvent(event);
 			};
 		}
@@ -314,9 +326,9 @@
 			btn.addEventListener("click", function () {
 				var items = this.previousSibling;
 				var newObj = '';
-				if(this.parentNode.schema.items.type == 'array'){
+				if (this.parentNode.schema.items.type == 'array') {
 					newObj = [];
-				} else if(this.parentNode.schema.items.type == 'object'){
+				} else if (this.parentNode.schema.items.type == 'object') {
 					newObj = {};
 				}
 				this.parentNode.obj.push(newObj);
