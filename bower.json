@@ -1,9 +1,16 @@
 {
 	"name": "fc",
-	"version": "1.1.9",
+	"version": "1.2.0",
 	"private": false,
 	"main": "fc.js",
 	"dependencies": {},
-	"keywords": ["form", "constructor", "builder", "file", "upload", "schema"],
+	"keywords": [
+		"form",
+		"constructor",
+		"builder",
+		"file",
+		"upload",
+		"schema"
+	],
 	"ignore": []
 }

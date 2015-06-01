@@ -14,6 +14,14 @@
 		var CustomEvent = global.CustomEvent;
 	}
 
+	var primitivesToInputs = {
+		string: 'text',
+		number: 'number',
+		integer: 'number',
+		boolean: 'checkbox',
+		any: 'text'
+	};
+
 	function forEach(obj, fn) {
 		for (var key in obj) {
 			fn(obj[key], key);
@@ -70,6 +78,11 @@
 		return el;
 	}
 
+	function toNumber(str, parseFn) {
+		str = str.trim();
+		return !str || isNaN(str) ? 0 : parseFn(str);
+	}
+
 	function changeField() {
 		var input = this;
 		var parent = closest(input, ['object', 'array']);
@@ -94,6 +107,15 @@
 					reader.readAsDataURL(file);
 				})()
 			}
+		} else if (input.schema.type == 'boolean') {
+			parent.obj[namePart] = input.checked;
+			closest(input, 'object-root').changeObj();
+		} else if (input.schema.type == 'integer') {
+			parent.obj[namePart] = toNumber(input.value, parseInt);
+			closest(input, 'object-root').changeObj();
+		} else if (input.schema.type == 'number') {
+			parent.obj[namePart] = toNumber(input.value, parseFloat);
+			closest(input, 'object-root').changeObj();
 		} else {
 			parent.obj[namePart] = input.value;
 			closest(input, 'object-root').changeObj();
@@ -104,13 +126,13 @@
 		wrapper.classList.add('form-group');
 		wrapper.classList.add('input-' + name);
 		var attributes = schema.attributes || {};
-		var primitivesToInputs = {
-			string: 'text',
-			number: 'text',
-			integer: 'number',
-			any: 'text'
-		};
-		if (schema.type == 'string' || schema.type == 'number' || schema.type == 'integer' || schema.type == 'any') {
+
+		if (Object.keys(primitivesToInputs).indexOf(schema.type) == -1) {
+			var el = makeEl('div', {
+				'class': 'alert alert-info'
+			});
+			el.innerHTML = "data type " + schema.type + " is not supported";
+		} else {
 			if (schema.widget) {
 				if (schema.widget == 'textarea' || schema.widget == 'code' || schema.widget == 'wysiwyg') {
 					var el = makeEl('textarea');
@@ -152,15 +174,13 @@
 				var el = makeEl('input', {
 					type: primitivesToInputs[schema.type]
 				});
+				if (schema.type == 'number') {
+					el.setAttribute('step', 'any');
+				}
 			}
 			if (schema.hasOwnProperty('required') && schema.required) {
 				el.setAttribute('required', true);
 			}
-		} else {
-			var el = makeEl('div', {
-				'class': 'alert alert-info'
-			});
-			el.innerHTML = "data type " + schema.type + " is not supported";
 		}
 
 		attributes.name = name ? (namePrefix ? [namePrefix, name].join('.') : name) : '';
@@ -365,7 +385,7 @@
 				wrapper.appendChild(schemaPart.form(objPart, key, name));
 			});
 
-		} else if (schema.type == 'string' || schema.type == 'integer' || schema.type == 'number' || schema.type == 'any') {
+		} else if (Object.keys(primitivesToInputs).indexOf(schema.type) != -1) {
 			makeInput(obj, schema, wrapper, name, namePrefix);
 		} else {
 			wrapper.classList.add('alert');
