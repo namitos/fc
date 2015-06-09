@@ -222,34 +222,36 @@
 					}
 				}
 				obj.forEach(function (item, i) {
-					var removeBtn = makeEl('button', {
-						type: 'button',
-						'class': 'btn remove'
-					}, [
-						makeEl('span', {
-							'class': 'glyphicon glyphicon-remove'
-						}),
-						makeEl('span', {
-							'class': 'text'
-						}, 'Remove file')
-					]);
-					removeBtn.addEventListener('click', function () {
-						var itemEl = closest(this, 'item');
-						var objEl = closest(this, 'object');
-						var nameParts = input.name.split('.');
-						var namePart = nameParts[nameParts.length - 1];
-						delete objEl.obj[namePart][itemEl.i];
-						itemEl.parentNode.removeChild(itemEl);
-						closest(this, 'object-root').changeObj();
-					}, false);
-					var itemEl = makeEl('span', {
-						'class': 'item'
-					}, [
-						makeEl('span', {'class': 'content'}, fileView(item)),
-						removeBtn
-					]);
-					itemEl.i = i;
-					list.appendChild(itemEl);
+					if(item){
+						var removeBtn = makeEl('button', {
+							type: 'button',
+							'class': 'btn remove'
+						}, [
+							makeEl('span', {
+								'class': 'glyphicon glyphicon-remove'
+							}),
+							makeEl('span', {
+								'class': 'text'
+							}, 'Remove file')
+						]);
+						removeBtn.addEventListener('click', function () {
+							var itemEl = closest(this, 'item');
+							var objEl = closest(this, 'object');
+							var nameParts = input.name.split('.');
+							var namePart = nameParts[nameParts.length - 1];
+							delete objEl.obj[namePart][itemEl.i];
+							itemEl.parentNode.removeChild(itemEl);
+							closest(this, 'object-root').changeObj();
+						}, false);
+						var itemEl = makeEl('span', {
+							'class': 'item'
+						}, [
+							makeEl('span', {'class': 'content'}, fileView(item)),
+							removeBtn
+						]);
+						itemEl.i = i;
+						list.appendChild(itemEl);
+					}
 				});
 			}
 		}
