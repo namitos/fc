@@ -194,6 +194,9 @@
 		if (el.type != 'file') {
 			el.value = obj;
 		}
+		if (el.type == 'checkbox') {
+			el.checked = obj;
+		}
 
 		el.changeField = changeField;
 		el.addEventListener('change', function () {
@@ -375,10 +378,8 @@
 						objPart = {};
 					} else if (schemaPart.type == 'string') {
 						objPart = '';
-					} else if (schemaPart.type == 'number' || schemaPart.type == 'integer') {
+					} else if (schemaPart.type == 'number' || schemaPart.type == 'integer' || schemaPart.type == 'boolean') {
 						objPart = 0;
-					} else if (schemaPart.type == 'boolean') {
-						objPart = false;
 					}
 					obj[key] = objPart;
 				} else {
@@ -417,4 +418,3 @@
 	}
 	defineAsGlobal && (global.fc = fc);
 })(this);
-
