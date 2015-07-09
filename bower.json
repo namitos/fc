@@ -1,6 +1,6 @@
 {
 	"name": "fc",
-	"version": "1.2.0",
+	"version": "1.2.3",
 	"private": false,
 	"main": "fc.js",
 	"dependencies": {},
