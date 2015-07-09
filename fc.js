@@ -378,8 +378,10 @@
 						objPart = {};
 					} else if (schemaPart.type == 'string') {
 						objPart = '';
-					} else if (schemaPart.type == 'number' || schemaPart.type == 'integer' || schemaPart.type == 'boolean') {
+					} else if (schemaPart.type == 'number' || schemaPart.type == 'integer') {
 						objPart = 0;
+					} else if (schemaPart.type == 'boolean') {
+						objPart = false;
 					}
 					obj[key] = objPart;
 				} else {
