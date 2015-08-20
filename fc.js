@@ -88,7 +88,11 @@
 		var parent = closest(input, ['object', 'array']);
 		var nameParts = input.name.split('.');
 		var namePart = nameParts[nameParts.length - 1];
-		if (input.schema.widget && input.schema.widget == 'base64File') {
+
+		if (input.convertValue) {
+			parent.obj[namePart] = input.convertValue(input.value);
+			closest(input, 'object-root').changeObj();
+		} else if (input.schema.widget && input.schema.widget == 'base64File') {
 			var filesLoadCounter = 0;
 			var filesLoaded = [];
 			var filesCount = input.files.length;
@@ -122,96 +126,51 @@
 		}
 	}
 
-	function makeInput(obj, schema, wrapper, name, namePrefix) {
-		wrapper.classList.add('form-group');
-		wrapper.classList.add('input-' + name);
-		var attributes = schema.attributes || {};
+	var widgets = {
+		select: function (obj, schema) {
+			var el = makeEl('div');
+			var input = makeEl('select');
+			el.appendChild(input);
 
-		if (Object.keys(primitivesToInputs).indexOf(schema.type) == -1) {
-			var el = makeEl('div', {
-				'class': 'alert alert-info'
-			});
-			el.innerHTML = "data type " + schema.type + " is not supported";
-		} else {
-			if (schema.widget) {
-				if (schema.widget == 'textarea' || schema.widget == 'code' || schema.widget == 'wysiwyg') {
-					var el = makeEl('textarea');
-
-				} else if (schema.widget == 'select') {
-					var el = makeEl('select');
-					el.appendChild(makeEl('option'));
-					var kv = [];
-					forEach(schema.options, function (val, key) {
-						kv.push({
-							key: key,
-							val: val
-						});
-					});
-					kv.sort(function (a, b) {
-						if (a.val > b.val) return 1;
-						if (a.val < b.val) return -1;
-						return 0;
-					});
-					kv.forEach(function (row) {
-						var option = makeEl('option');
-						option.setAttribute('value', row.key);
-						option.innerHTML = row.val;
-						el.appendChild(option);
-					});
-
-				} else if (schema.widget == 'file' || schema.widget == 'base64File') {
-					var el = makeEl('input', {
-						type: 'file'
-					});
-
-				} else {
-					var el = makeEl('div', {
-						'class': 'alert alert-info'
-					});
-					el.innerHTML = "widget type " + schema.widget + " is not supported";
-				}
-			} else {
-				var el = makeEl('input', {
-					type: primitivesToInputs[schema.type]
+			input.appendChild(makeEl('option'));
+			var kv = [];
+			forEach(schema.options, function (val, key) {
+				kv.push({
+					key: key,
+					val: val
 				});
-				if (schema.type == 'number') {
-					el.setAttribute('step', 'any');
+			});
+			kv.sort(function (a, b) {
+				if (a.val > b.val) return 1;
+				if (a.val < b.val) return -1;
+				return 0;
+			}).forEach(function (row) {
+				var option = makeEl('option');
+				option.setAttribute('value', row.key);
+				if (row.key == obj) {
+					option.setAttribute('selected', true);
 				}
-			}
-			if (schema.hasOwnProperty('required') && schema.required) {
-				el.setAttribute('required', true);
-			}
-		}
+				option.innerHTML = row.val;
+				input.appendChild(option);
+			});
+			return {
+				wrapper: el,
+				input: input
+			};
+		},
+		base64File: function (obj, schema) {
+			var el = makeEl('div');
 
-		attributes.name = name ? (namePrefix ? [namePrefix, name].join('.') : name) : '';
-		forEach(attributes, function (val, key) {
-			el.setAttribute(key, val);
-		});
-		el.classList.add('form-control');
-		if (schema.widget) {
-			el.classList.add('widget-' + schema.widget);
-		}
-		if (el.type != 'file') {
-			el.value = obj;
-		}
-		if (el.type == 'checkbox') {
-			el.checked = obj;
-		}
+			var input = makeEl('input', {
+				type: 'file'
+			});
+			el.appendChild(input);
 
-		el.changeField = changeField;
-		el.addEventListener('change', function () {
-			this.changeField();
-		});
-		el.schema = schema;
-
-		if (schema.widget == 'file' || schema.widget == 'base64File') {
 			var list = makeEl('div', {
 				'class': 'list'
 			});
-			var input = el;
-			el = makeEl('div', {
-				'class': 'input-file-inner'
-			}, [list, input]);
+			el.appendChild(list);
+
 			if (obj instanceof Array) {
 				if (schema.fileView instanceof Function) {
 					var fileView = schema.fileView;
@@ -255,7 +214,88 @@
 					list.appendChild(itemEl);
 				});
 			}
+			return {
+				wrapper: el,
+				input: input
+			};
+		},
+		textarea: function (obj, schema) {
+			var el = makeEl('div');
+			var input = makeEl('textarea');
+			input.value = obj;
+			el.appendChild(input);
+			return {
+				wrapper: el,
+				input: input
+			};
+		},
+		input: function (obj, schema) {
+			var el = makeEl('div');
+			var input = makeEl('input', {
+				type: primitivesToInputs[schema.type]
+			});
+			el.appendChild(input);
+			if (schema.type == 'number') {
+				input.setAttribute('step', 'any');
+			}
+			if (input.type != 'file') {
+				input.value = obj;
+			}
+			if (input.type == 'checkbox') {
+				input.checked = obj;
+			}
+			return {
+				wrapper: el,
+				input: input
+			}
+		},
+		unixDate: function (obj, schema) {
+			if (window.moment) {
+				var el = makeEl('div');
+				var input = makeEl('input', {
+					type: 'date'
+				});
+				el.appendChild(input);
+				input.value = obj ? moment(obj).format("YYYY-MM-DD") : '';
+				input.convertValue = function (value) {
+					return value ? moment(value, "YYYY-MM-DD").toDate().valueOf() : 0;
+				};
+				return {
+					wrapper: el,
+					input: input
+				}
+			} else {
+				console.error('unixDate widget requires momentjs');
+			}
 		}
+	};
+
+	function makeInput(obj, schema, wrapper, name, namePrefix) {
+		wrapper.classList.add('form-group');
+		wrapper.classList.add('input-' + name);
+		var attributes = schema.attributes || {};
+
+		var widgetName = schema.widget || 'input';
+		var widget = widgets[widgetName](obj, schema);
+		var el = widget.wrapper;
+		var input = widget.input;
+
+		attributes.name = name ? (namePrefix ? [namePrefix, name].join('.') : name) : '';
+		forEach(attributes, function (val, key) {
+			input.setAttribute(key, val);
+		});
+		if (schema.hasOwnProperty('required') && schema.required) {
+			input.setAttribute('required', true);
+		}
+		input.classList.add('form-control');
+		input.classList.add('widget-' + widgetName);
+
+		input.changeField = changeField;
+		input.addEventListener('change', function () {
+			this.changeField();
+		});
+		input.schema = schema;
+
 		wrapper.appendChild(el);
 	}
 
@@ -401,10 +441,7 @@
 	};
 
 	function fc(schema, obj) {
-		if (typeof obj == 'undefined') {
-			obj = {};
-		}
-		return (new Schema(schema)).form(obj);
+		return (new Schema(schema)).form(obj || {});
 	}
 
 	var defineAsGlobal = true;
