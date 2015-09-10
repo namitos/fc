@@ -291,9 +291,16 @@
 		input.classList.add('widget-' + widgetName);
 
 		input.changeField = changeField;
-		input.addEventListener('change', function () {
-			this.changeField();
-		});
+		if (input.nodeName == 'SELECT') {
+			input.addEventListener('change', function () {
+				this.changeField();
+			});
+		} else {
+			input.addEventListener('input', function () {
+				this.changeField();
+			});
+		}
+
 		input.schema = schema;
 
 		wrapper.appendChild(el);
@@ -443,6 +450,8 @@
 	function fc(schema, obj) {
 		return (new Schema(schema)).form(obj || {});
 	}
+
+	fc.widgets = widgets;
 
 	var defineAsGlobal = true;
 	if (typeof exports === 'object') {
