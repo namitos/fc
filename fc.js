@@ -23,8 +23,10 @@
 	};
 
 	function forEach(obj, fn) {
-		for (var key in obj) {
-			fn(obj[key], key);
+		if (obj) {
+			Object.keys(obj).forEach(function (key) {
+				fn(obj[key], key);
+			});
 		}
 	}
 
@@ -291,7 +293,7 @@
 		input.classList.add('widget-' + widgetName);
 
 		input.changeField = changeField;
-		if (input.nodeName == 'SELECT') {
+		if (input.nodeName == 'SELECT' || input.type == 'file') {
 			input.addEventListener('change', function () {
 				this.changeField();
 			});
@@ -332,10 +334,11 @@
 
 	function Schema(schema) {
 		merge(this, schema);
+		var instance = this;
 		if (schema.type == 'object') {
-			for (var key in schema.properties) {
-				this.properties[key] = new Schema(schema.properties[key]);
-			}
+			forEach(schema.properties, function (fieldSchema, key) {
+				instance.properties[key] = new Schema(fieldSchema);
+			});
 		} else if (schema.type == 'array') {
 			this.items = new Schema(this.items);
 		}
