@@ -293,7 +293,7 @@
 		input.classList.add('widget-' + widgetName);
 
 		input.changeField = changeField;
-		if (input.nodeName == 'SELECT' || input.type == 'file') {
+		if (input.nodeName == 'SELECT' || input.type == 'file' || input.type == 'checkbox') {
 			input.addEventListener('change', function () {
 				this.changeField();
 			});
