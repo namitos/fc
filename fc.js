@@ -420,24 +420,26 @@
 				name = [namePrefix, name].join('.');
 			}
 			forEach(schema.properties, function (schemaPart, key) {
-				if (!obj.hasOwnProperty(key)) {
-					var objPart;
-					if (schemaPart.type == 'array') {
-						objPart = [];
-					} else if (schemaPart.type == 'object') {
-						objPart = {};
-					} else if (schemaPart.type == 'string') {
-						objPart = '';
-					} else if (schemaPart.type == 'number' || schemaPart.type == 'integer') {
-						objPart = 0;
-					} else if (schemaPart.type == 'boolean') {
-						objPart = false;
+				if (!schemaPart.readOnlyIo) {
+					if (!obj.hasOwnProperty(key)) {
+						var objPart;
+						if (schemaPart.type == 'array') {
+							objPart = [];
+						} else if (schemaPart.type == 'object') {
+							objPart = {};
+						} else if (schemaPart.type == 'string') {
+							objPart = '';
+						} else if (schemaPart.type == 'number' || schemaPart.type == 'integer') {
+							objPart = 0;
+						} else if (schemaPart.type == 'boolean') {
+							objPart = false;
+						}
+						obj[key] = objPart;
+					} else {
+						objPart = obj[key];
 					}
-					obj[key] = objPart;
-				} else {
-					objPart = obj[key];
+					wrapper.appendChild(schemaPart.form(objPart, key, name));
 				}
-				wrapper.appendChild(schemaPart.form(objPart, key, name));
 			});
 
 		} else if (Object.keys(primitivesToInputs).indexOf(schema.type) != -1) {
