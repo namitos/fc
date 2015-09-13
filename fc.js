@@ -88,9 +88,8 @@
 	function changeField() {
 		var input = this;
 		var parent = closest(input, ['object', 'array']);
-		var nameParts = input.name.split('.');
+		var nameParts = (input.name || input.getAttribute('name')).split('.');
 		var namePart = nameParts[nameParts.length - 1];
-
 		if (input.convertValue) {
 			parent.obj[namePart] = input.convertValue(input.value);
 			closest(input, 'object-root').changeObj();
