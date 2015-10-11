@@ -198,12 +198,12 @@
 					]);
 					removeBtn.addEventListener('click', function () {
 						var itemEl = closest(this, 'item');
-						var objEl = closest(this, 'object');
+						var objEl = closest(this, ['object', 'array']);
 						var nameParts = input.name.split('.');
 						var namePart = nameParts[nameParts.length - 1];
 						delete objEl.obj[namePart][itemEl.i];
-						itemEl.parentNode.removeChild(itemEl);
 						closest(this, 'object-root').changeObj();
+						itemEl.parentNode.removeChild(itemEl);
 					}, false);
 					var itemEl = makeEl('span', {
 						'class': 'item'
