@@ -91,26 +91,15 @@
 		var nameParts = (input.name || input.getAttribute('name')).split('.');
 		var namePart = nameParts[nameParts.length - 1];
 		if (input.convertValue) {
-			parent.obj[namePart] = input.convertValue(input.value);
-			closest(input, 'object-root').changeObj();
-		} else if (input.schema.widget && input.schema.widget == 'base64File') {
-			var filesLoadCounter = 0;
-			var filesLoaded = [];
-			var filesCount = input.files.length;
-			for (var i = 0; i < input.files.length; ++i) {
-				(function () {
-					var file = input.files[i];
-					var reader = new FileReader();
-					reader.onload = function (a) {
-						filesLoaded[filesLoadCounter] = a.target.result;
-						filesLoadCounter++;
-						if (filesLoadCounter == filesCount) {
-							parent.obj[namePart] = filesLoaded;
-							closest(input, 'object-root').changeObj();
-						}
-					};
-					reader.readAsDataURL(file);
-				})()
+			var value = input.convertValue(input.value);
+			if (value instanceof Promise) {
+				value.then(function (value) {
+					parent.obj[namePart] = value;
+					closest(input, 'object-root').changeObj();
+				});
+			} else {
+				parent.obj[namePart] = value;
+				closest(input, 'object-root').changeObj();
 			}
 		} else if (input.schema.type == 'boolean') {
 			parent.obj[namePart] = input.checked;
@@ -165,6 +154,30 @@
 			var input = makeEl('input', {
 				type: 'file'
 			});
+
+			input.convertValue = function () {
+				return new Promise(function (resolve, reject) {
+					var filesLoadCounter = 0;
+					var filesLoaded = [];
+					var filesCount = input.files.length;
+					for (var i = 0; i < input.files.length; ++i) {
+						(function () {
+							var file = input.files[i];
+							var reader = new FileReader();
+							reader.onload = function (a) {
+								filesLoaded[filesLoadCounter] = a.target.result;
+								filesLoadCounter++;
+								if (filesLoadCounter == filesCount) {
+									console.log(filesLoaded);
+									resolve(filesLoaded);
+								}
+							};
+							reader.readAsDataURL(file);
+						})()
+					}
+				});
+			};
+
 			el.appendChild(input);
 
 			var list = makeEl('div', {
