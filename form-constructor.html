@@ -1,0 +1,57 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/iron-form/iron-form.html">
+<link rel="import" href="bower_components/paper-button/paper-button.html">
+<script src="fc.js"></script>
+
+<dom-module id="form-constructor">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      button[nostyle] {
+        -webkit-appearance: none;
+        border: 0;
+        padding: 0;
+        background: 0 0;
+        font-size: 100%;
+        vertical-align: middle;
+        height: auto;
+      }
+    </style>
+
+    <form id="form" is="iron-form" on-submit="_onSubmit">
+      <button nostyle id="submitButton" type="submit"><paper-button>Принять</paper-button></button>
+    </form>
+    
+  </template>
+  <script>
+    (function () {
+      Polymer({
+        is: 'form-constructor',
+        properties: {
+          schema: {
+            type: Object,
+            value: function () { return {}; }
+          },
+          value: {
+            type: Object,
+            value: function () { return {}; }
+          }
+        },
+        
+        attached: function () {
+          var form = Polymer.dom(this.$.form).insertBefore(fc(this.schema, this.value), this.$.submitButton);
+          form.addEventListener('changeObj', function (e) { 
+            this.fire('form-change', this.value);
+          }.bind(this));
+        },
+
+        _onSubmit: function (e) {
+          this.fire('form-submit', this.value);
+        }
+      });
+    })();
+  </script>
+</dom-module>
