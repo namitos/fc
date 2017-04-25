@@ -55,11 +55,13 @@
           this.scopeSubtree(this.$.form, true);
           form.addEventListener('changeObj', (e) => {
             this.fire('form-change', this.value);
+            this.change && this.change(this.value);
           });
         },
         _onSubmit: function (e) {
           if (e.target.validate()) {
             this.fire('form-submit', this.value);
+            this.submit && this.submit(this.value);
           } else {
             console.log('not valid');
           }
