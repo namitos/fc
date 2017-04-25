@@ -1,11 +1,11 @@
-<link rel="import" href="bower_components/polymer/polymer.html">
-<link rel="import" href="bower_components/iron-form/iron-form.html">
-<link rel="import" href="bower_components/paper-button/paper-button.html">
-<script src="fc.js"></script>
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-form/iron-form.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="fc-script.html">
 
 <dom-module id="form-constructor">
   <template>
-    <style>
+    <style include="main-styles">
       :host {
         display: block;
       }
@@ -22,9 +22,11 @@
     </style>
 
     <form id="form" is="iron-form" on-submit="_onSubmit">
-      <button nostyle id="submitButton" type="submit"><paper-button>Принять</paper-button></button>
+      <button nostyle id="submitButton" type="submit">
+        <paper-button>[[btnCaption]]</paper-button>
+      </button>
     </form>
-    
+
   </template>
   <script>
     (function () {
@@ -33,23 +35,34 @@
         properties: {
           schema: {
             type: Object,
-            value: function () { return {}; }
+            value: () => {
+              return {};
+            }
           },
           value: {
             type: Object,
-            value: function () { return {}; }
+            value: () => {
+              return {};
+            }
+          },
+          btnCaption: {
+            type: String,
+            value: "Save"
           }
         },
-        
         attached: function () {
-          var form = Polymer.dom(this.$.form).insertBefore(fc(this.schema, this.value), this.$.submitButton);
-          form.addEventListener('changeObj', function (e) { 
+          let form = this.$.form.insertBefore(fc(this.schema, this.value), this.$.submitButton);
+          this.scopeSubtree(this.$.form, true);
+          form.addEventListener('changeObj', (e) => {
             this.fire('form-change', this.value);
-          }.bind(this));
+          });
         },
-
         _onSubmit: function (e) {
-          this.fire('form-submit', this.value);
+          if (e.target.validate()) {
+            this.fire('form-submit', this.value);
+          } else {
+            console.log('not valid');
+          }
         }
       });
     })();
