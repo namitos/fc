@@ -1,156 +1,178 @@
-<script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js'></script>
-<script src='http://momentjs.com/downloads/moment.min.js'></script>
-<script src='fc.js'></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>fc example</title>
+
+  <style>
+    * {
+      font-family: arial;
+    }
+
+    .object,
+    .array {
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.1);
+      margin-bottom: 10px;
+    }
+
+    label {
+      display: block;
+    }
+  </style>
+
+  <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js'></script>
+  <script src='http://momentjs.com/downloads/moment.min.js'></script>
+  <link rel="import" href="form-constructor.html">
+</head>
+<body>
+
 <div class='test'></div>
 
-<style>
-	* {
-		font-family: arial;
-	}
-
-	.object,
-	.array {
-		padding: 10px;
-		background: rgba(0, 0, 0, 0.1);
-		margin-bottom: 10px;
-	}
-
-	label {
-		display: block;
-	}
-</style>
 <script>
+  let schema = {
+    type: 'object',
+    properties: {
+      sampleBoolean: {
+        type: 'boolean',
+        label: 'sample boolean'
+      },
+      foo: {
+        type: 'string',
+        label: 'sample string',
+        required: true
+      },
+      foot: {
+        type: 'string',
+        label: 'sample textarea',
+        widget: 'textarea'
+      },
+      foo1: {
+        type: 'number',
+        label: 'sample number'
+      },
+      foo2: {
+        type: 'integer',
+        label: 'sample integer'
+      },
+      fooDate: {
+        type: 'integer',
+        label: 'sample unixDate',
+        widget: 'unixDate'
+      },
+      foo5: {
+        type: 'integer',
+        label: 'sample integer select',
+        widget: 'select',
+        options: {
+          1: 'sdsdds',
+          2: 'ddddfff'
+        }
+      },
+      file: {
+        type: 'string',
+        label: 'sample base64 file',
+        widget: 'base64File'
+      },
+      fileMultiple: {
+        type: 'string',
+        label: 'sample base64 file multiple',
+        widget: 'base64File',
+        attributes: {
+          multiple: true
+        }
+      },
+      foo3: {
+        type: 'object',
+        label: 'sample nested object',
+        properties: {
+          foo: {
+            type: 'string',
+            label: 'sample string'
+          },
+          foo1: {
+            type: 'number',
+            label: 'sample number'
+          },
+          foo2: {
+            type: 'integer',
+            label: 'sample integer'
+          }
+        }
+      },
+      arr: {
+        type: 'array',
+        label: 'sample array of primitives',
+        items: {
+          type: 'string'
+        }
+      },
+      arr2: {
+        type: 'array',
+        label: 'sample array of objects',
+        items: {
+          type: 'object',
+          properties: {
+            foo: {
+              type: 'string',
+              label: 'sample string'
+            },
+            foo1: {
+              type: 'number',
+              label: 'sample number'
+            },
+            foo2: {
+              type: 'integer',
+              label: 'sample integer'
+            },
+            file: {
+              type: 'string',
+              label: 'sample base64 file',
+              widget: 'base64File',
+              attributes: {
+                multiple: true
+              }
 
-	var schema = {
-		type: 'object',
-		properties: {
-			sampleBoolean: {
-				type: 'boolean',
-				label: 'sample boolean'
-			},
-			foo: {
-				type: 'string',
-				label: 'sample string'
-			},
-			foot: {
-				type: 'string',
-				label: 'sample textarea',
-				widget: 'textarea'
-			},
-			foo1: {
-				type: 'number',
-				label: 'sample number'
-			},
-			foo2: {
-				type: 'integer',
-				label: 'sample integer'
-			},
-			fooDate: {
-				type: 'integer',
-				label: 'sample unixDate',
-				widget: 'unixDate'
-			},
-			foo5: {
-				type: 'integer',
-				label: 'sample integer select',
-				widget: 'select',
-				options: {
-					1: 'sdsdds',
-					2: 'ddddfff'
-				}
-			},
-			file: {
-				type: 'string',
-				label: 'sample base64 file',
-				widget: 'base64File'
-			},
-			fileMultiple: {
-				type: 'string',
-				label: 'sample base64 file multiple',
-				widget: 'base64File',
-				attributes: {
-					multiple: true
-				}
-			},
-			foo3: {
-				type: 'object',
-				label: 'sample nested object',
-				properties: {
-					foo: {
-						type: 'string',
-						label: 'sample string'
-					},
-					foo1: {
-						type: 'number',
-						label: 'sample number'
-					},
-					foo2: {
-						type: 'integer',
-						label: 'sample integer'
-					}
-				}
-			},
-			arr: {
-				type: 'array',
-				label: 'sample array of primitives',
-				items: {
-					type: 'string'
-				}
-			},
-			arr2: {
-				type: 'array',
-				label: 'sample array of objects',
-				items: {
-					type: 'object',
-					properties: {
-						foo: {
-							type: 'string',
-							label: 'sample string'
-						},
-						foo1: {
-							type: 'number',
-							label: 'sample number'
-						},
-						foo2: {
-							type: 'integer',
-							label: 'sample integer'
-						},
-						file: {
-							type: 'string',
-							label: 'sample base64 file',
-							widget: 'base64File',
-							attributes: {
-								multiple: true
-							}
+            }
+          }
+        }
+      }
+    }
+  };
 
-						}
-					}
-				}
-			}
-		}
-	};
+  /*document.querySelector('.test').appendChild(fc(schema, {
+   sampleBoolean: true,
+   foo: 'azaza',
+   arr: ['bla', 'yarrrr'],
+   foo5: 2,
+   fooDate: new Date().valueOf()
+   }));
 
-	document.querySelector('.test').appendChild(fc(schema, {
-		sampleBoolean: true,
-		foo: 'azaza',
-		arr: ['bla', 'yarrrr'],
-		foo5: 2,
-		fooDate: new Date().valueOf()
-	}));
+   document.querySelector('.test > .object').addEventListener('changeObj', function (e) {
+   console.log('vanilla changeObj', e.detail);
+   }, false);
+   document.querySelector('.test > .object').addEventListener('changeObjArrayAdd', function (e) {
+   console.log('vanilla changeObjArrayAdd', e.detail);
+   }, false);
 
-	document.querySelector('.test > .object').addEventListener('changeObj', function (e) {
-		console.log('vanilla changeObj', e.detail);
-	}, false);
-	document.querySelector('.test > .object').addEventListener('changeObjArrayAdd', function (e) {
-		console.log('vanilla changeObjArrayAdd', e.detail);
-	}, false);
+   $('.test > .object').on('changeObj', function (e) {
+   console.log('jQuery changeObj', e.originalEvent.detail);
+   });
+   $('.test > .object').on('changeObjArrayAdd', function (e) {
+   console.log('jQuery changeObjArrayAdd', e.originalEvent.detail);
+   });*/
 
-	$('.test > .object').on('changeObj', function (e) {
-		console.log('jQuery changeObj', e.originalEvent.detail);
-	});
-	$('.test > .object').on('changeObjArrayAdd', function (e) {
-		console.log('jQuery changeObjArrayAdd', e.originalEvent.detail);
-	});
-
-
+  let el = document.createElement('form-constructor');
+  el.schema = schema;
+  document.body.appendChild(el);
+  el.addEventListener('form-change', function (e) {
+    console.log('change', e.detail);
+  });
+  el.addEventListener('form-submit', function (e) {
+    console.log('submit', e.detail);
+  })
 </script>
+</body>
+</html>

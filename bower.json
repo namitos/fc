@@ -1,16 +1,19 @@
 {
-	"name": "fc",
-	"version": "1.4.0",
-	"private": false,
-	"main": "fc.js",
-	"dependencies": {},
-	"keywords": [
-		"form",
-		"constructor",
-		"builder",
-		"file",
-		"upload",
-		"schema"
-	],
-	"ignore": []
+  "name": "fc",
+  "version": "1.4.0",
+  "private": false,
+  "main": "fc.js",
+  "dependencies": {
+    "iron-form": "PolymerElements/iron-form#^1.1.4",
+    "paper-button": "^1.0.14"
+  },
+  "keywords": [
+    "form",
+    "constructor",
+    "builder",
+    "file",
+    "upload",
+    "schema"
+  ],
+  "ignore": []
 }

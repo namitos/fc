@@ -1,0 +1,70 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-form/iron-form.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="fc-script.html">
+
+<dom-module id="form-constructor">
+  <template>
+    <style include="main-styles">
+      :host {
+        display: block;
+      }
+
+      button[nostyle] {
+        -webkit-appearance: none;
+        border: 0;
+        padding: 0;
+        background: 0 0;
+        font-size: 100%;
+        vertical-align: middle;
+        height: auto;
+      }
+    </style>
+
+    <form id="form" is="iron-form" on-submit="_onSubmit">
+      <button nostyle id="submitButton" type="submit">
+        <paper-button>[[btnCaption]]</paper-button>
+      </button>
+    </form>
+
+  </template>
+  <script>
+    (function () {
+      Polymer({
+        is: 'form-constructor',
+        properties: {
+          schema: {
+            type: Object,
+            value: () => {
+              return {};
+            }
+          },
+          value: {
+            type: Object,
+            value: () => {
+              return {};
+            }
+          },
+          btnCaption: {
+            type: String,
+            value: "Save"
+          }
+        },
+        attached: function () {
+          let form = this.$.form.insertBefore(fc(this.schema, this.value), this.$.submitButton);
+          this.scopeSubtree(this.$.form, true);
+          form.addEventListener('changeObj', (e) => {
+            this.fire('form-change', this.value);
+          });
+        },
+        _onSubmit: function (e) {
+          if (e.target.validate()) {
+            this.fire('form-submit', this.value);
+          } else {
+            console.log('not valid');
+          }
+        }
+      });
+    })();
+  </script>
+</dom-module>
