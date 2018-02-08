@@ -1,12 +1,9 @@
 {
   "name": "fc",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "private": false,
   "main": "fc.js",
-  "dependencies": {
-    "iron-form": "PolymerElements/iron-form#^1.1.4",
-    "paper-button": "^1.0.14"
-  },
+  "dependencies": {},
   "keywords": [
     "form",
     "constructor",
