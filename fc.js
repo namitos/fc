@@ -48,7 +48,7 @@ class FCPrimitive extends BaseComponent {
   template() {
     let type = this.constructor.primitives[this.type];
     return html`
-      <label ?hidden="${!this.label}">${this.label}</label> <input type="${type}" value="${this.value}" ?required="${this.required}" @change="${this._onChange.bind(this)}" />
+      <label ?hidden="${!this.label}">${this.label}</label> <input type="${type}" .value="${this.value}" ?required="${this.required}" @change="${this._onChange.bind(this)}" />
     `;
   }
 }
@@ -140,6 +140,7 @@ class FCObject extends BaseComponent {
     let propNames = Object.keys(this.schema.properties);
     let startValue = this.value || {};
     this.value = Object.assign({}, startValue); //переопределяем стартовое значение, чтоб не модифицировать оригинал: там геттеры-сеттеры создаются. и при удалении формы могут быть утечки памяти из-за ссылок на "удалённые" инпуты. если закомментить, будет редактировать оригинальный объект.
+    this.el.value = this.value;
 
     for (let i = 0; i < propNames.length; ++i) {
       let propName = propNames[i];
@@ -189,7 +190,6 @@ class FCObject extends BaseComponent {
             delete objProps.type;
           }
           wInstance = Object.assign(document.createElement(schema.widget), objProps);
-          wInstance.el = wInstance; //crutch for rendering
         } else {
           wInstance = new whatToCreate(objProps);
         }
@@ -214,7 +214,7 @@ class FCObject extends BaseComponent {
   template() {
     return html`
       <label ?hidden="${!this.label}">${this.label}</label>
-      <div>${(this.fields || []).map((i) => i.el)}</div>
+      <div>${(this.fields || []).map((i) => (i.el instanceof HTMLElement ? i.el : i))}</div>
     `;
   }
 
