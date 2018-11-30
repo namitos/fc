@@ -46,7 +46,7 @@ class FCPrimitive extends BaseComponent {
   }
 
   template() {
-    let type = this.constructor.primitives[this.type];
+    let type = this.schema && this.schema.attributes && this.schema.attributes.type ? this.schema.attributes.type : this.constructor.primitives[this.type];
     return html`
       <label ?hidden="${!this.label}">${this.label}</label> <input type="${type}" .value="${this.value}" ?required="${this.required}" @change="${this._onChange.bind(this)}" />
     `;
@@ -162,9 +162,6 @@ class FCObject extends BaseComponent {
         }
         let wInstance = {};
         let objProps = { schema, value };
-        if (schema.attributes) {
-          Object.assign(objProps, schema.attributes);
-        }
         ['label', 'labels', 'placeholder', 'placeholders', 'type', 'model', 'items', 'options', 'required', 'multiple'].forEach((k) => {
           if (schema[k]) {
             objProps[k] = schema[k];
