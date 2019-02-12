@@ -1,4 +1,4 @@
-import { BaseComponentMixin } from '../model-components/BaseComponentMixin.js';
+import { BaseComponentMixin } from '../frontend-common/BaseComponentMixin.js';
 import { render, html } from '../lit-html/lit-html.js';
 
 export { html };
