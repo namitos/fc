@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/namitos/fc#readme",
   "dependencies": {
-    "model-components": "github:namitos/model-components"
+    "frontend-common": "github:namitos/frontend-common#v1"
   }
 }
