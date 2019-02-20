@@ -106,22 +106,82 @@ class FCSelect extends FCPrimitive {
     return html`
       <label ?hidden="${!this.label}">${this.label}</label>
       <select @change="${this._onChange.bind(this)}" ?required="${this.required}" ?multiple="${this.multiple}" ?novalue="${!this.value}">
-        ${
-          this.multiple
-            ? ''
-            : html`
-                <option value="" placeholder>${this.placeholder || ''}</option>
-              `
-        }
-        ${
-          (this.items || []).map(
-            (item) =>
-              html`
-                <option value="${item._id}" ?selected="${this._selected(item)}">${item.title || item.name}</option>
-              `
-          )
-        }
+        ${this.multiple
+          ? ''
+          : html`
+              <option value="" placeholder>${this.placeholder || ''}</option>
+            `}
+        ${(this.items || []).map(
+          (item) =>
+            html`
+              <option value="${item._id}" ?selected="${this._selected(item)}">${item.title || item.name}</option>
+            `
+        )}
       </select>
+    `;
+  }
+}
+
+function getInputInstance({ schema, value }) {
+  let wInstance = {};
+  let objProps = { schema, value };
+  ['label', 'labels', 'placeholder', 'placeholders', 'type', 'model', 'items', 'options', 'required', 'multiple'].forEach((k) => {
+    if (schema[k]) {
+      objProps[k] = schema[k];
+    }
+  });
+
+  let whatToCreate = 'webcomponent';
+  if (schema.widget) {
+    if (widgets[schema.widget]) {
+      whatToCreate = widgets[schema.widget];
+    }
+  } else if (Object.keys(FCPrimitive.primitives).includes(schema.type)) {
+    whatToCreate = FCPrimitive;
+  } else if (schema.type === 'object') {
+    whatToCreate = FCObject;
+  } else if (schema.type === 'array') {
+    whatToCreate = FCArray;
+  }
+
+  if (whatToCreate === 'webcomponent') {
+    //if no widget definition, trying webcomponent
+    if (['textarea'].includes(schema.widget)) {
+      delete objProps.type;
+    }
+    wInstance = Object.assign(document.createElement(schema.widget), objProps);
+  } else {
+    wInstance = new whatToCreate(objProps);
+  }
+
+  return wInstance;
+}
+
+class FCArray extends BaseComponent {
+  static get is() {
+    return 'fc-array';
+  }
+
+  static get properties() {
+    return {
+      value: {
+        type: Array,
+        value: () => []
+      }
+    };
+  }
+
+  constructor() {
+    super(...arguments);
+    if (!this.schema || !this.schema.items) {
+      console.error(`!this.schema || !this.schema.items`, this);
+    }
+  }
+
+  template() {
+    return html`
+      <label ?hidden="${!this.label}">${this.label}</label>
+      <div>under construction</div>
     `;
   }
 }
@@ -135,7 +195,7 @@ class FCObject extends BaseComponent {
     super(...arguments);
     let fields = [];
     if (!this.schema || !this.schema.properties) {
-      console.log(this);
+      console.error(`!this.schema || !this.schema.properties`, this);
     }
     let propNames = Object.keys(this.schema.properties);
     let startValue = this.value || {};
@@ -160,37 +220,8 @@ class FCObject extends BaseComponent {
             value = [];
           }
         }
-        let wInstance = {};
-        let objProps = { schema, value };
-        ['label', 'labels', 'placeholder', 'placeholders', 'type', 'model', 'items', 'options', 'required', 'multiple'].forEach((k) => {
-          if (schema[k]) {
-            objProps[k] = schema[k];
-          }
-        });
 
-        let whatToCreate = 'webcomponent';
-        if (schema.widget) {
-          if (widgets[schema.widget]) {
-            whatToCreate = widgets[schema.widget];
-          }
-        } else if (Object.keys(FCPrimitive.primitives).includes(schema.type)) {
-          whatToCreate = FCPrimitive;
-        } else if (schema.type === 'object') {
-          whatToCreate = FCObject;
-        } else if (schema.type === 'array') {
-          whatToCreate = FCObject; //TODO: create array
-        }
-
-        if (whatToCreate === 'webcomponent') {
-          //if no widget definition, trying webcomponent
-          if (['textarea'].includes(schema.widget)) {
-            delete objProps.type;
-          }
-          wInstance = Object.assign(document.createElement(schema.widget), objProps);
-        } else {
-          wInstance = new whatToCreate(objProps);
-        }
-
+        let wInstance = getInputInstance({ schema, value });
         fields.push(wInstance);
 
         Object.defineProperty(this.value, propName, {
