@@ -123,6 +123,20 @@ class FCSelect extends FCPrimitive {
 }
 
 function getInputInstance({ schema, value }) {
+  if (!value) {
+    if (['number', 'integer'].includes(schema.type)) {
+      value = 0;
+    } else if (schema.type === 'string') {
+      value = '';
+    } else if (schema.type === 'boolean') {
+      value = false;
+    } else if (schema.type === 'object') {
+      value = {};
+    } else if (schema.type === 'array') {
+      value = [];
+    }
+  }
+
   let wInstance = {};
   let objProps = { schema, value };
   ['label', 'labels', 'placeholder', 'placeholders', 'type', 'model', 'items', 'options', 'required', 'multiple'].forEach((k) => {
@@ -207,20 +221,6 @@ class FCObject extends BaseComponent {
       let schema = this.schema.properties[propName];
       if (!schema.readOnlyIo) {
         let value = startValue[propName];
-        if (!value) {
-          if (['number', 'integer'].includes(schema.type)) {
-            value = 0;
-          } else if (schema.type === 'string') {
-            value = '';
-          } else if (schema.type === 'boolean') {
-            value = false;
-          } else if (schema.type === 'object') {
-            value = {};
-          } else if (schema.type === 'array') {
-            value = [];
-          }
-        }
-
         let wInstance = getInputInstance({ schema, value });
         fields.push(wInstance);
 
