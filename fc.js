@@ -146,7 +146,9 @@ function getInputInstance({ schema, value }) {
   });
 
   let whatToCreate = 'webcomponent';
-  if (schema.widget) {
+  if (schema.widget === 'select') {
+    whatToCreate = FCSelect;
+  } else if (schema.widget) {
     if (widgets[schema.widget]) {
       whatToCreate = widgets[schema.widget];
     }
@@ -176,26 +178,57 @@ class FCArray extends BaseComponent {
     return 'fc-array';
   }
 
-  static get properties() {
-    return {
-      value: {
-        type: Array,
-        value: () => []
-      }
-    };
-  }
-
   constructor() {
     super(...arguments);
     if (!this.schema || !this.schema.items) {
       console.error(`!this.schema || !this.schema.items`, this);
     }
+
+    let fields = [];
+    this.value.forEach((valueItem, i) => {
+      let wInstance = getInputInstance({ schema: this.schema.items, value: valueItem });
+      Object.defineProperty(this.value, i, {
+        get() {
+          return wInstance.value;
+        },
+        set(v) {
+          wInstance.value = v;
+        },
+        enumerable: true
+      });
+      fields.push(wInstance);
+    });
+    this.fields = fields;
+    this.render();
+  }
+
+  add() {
+    let wInstance = getInputInstance({ schema: this.schema.items });
+    Object.defineProperty(this.value, this.value.length, {
+      get() {
+        return wInstance.value;
+      },
+      set(v) {
+        wInstance.value = v;
+      },
+      enumerable: true
+    });
+    this.fields.push(wInstance);
+    this.render();
   }
 
   template() {
     return html`
       <label ?hidden="${!this.label}">${this.label}</label>
-      <div>under construction</div>
+      <div>
+        ${(this.fields || []).map(
+          (i) =>
+            html`
+              <div class="fc-array-item">${i.el instanceof HTMLElement ? i.el : i}</div>
+            `
+        )}
+        <a class="fc-array-add" @click="${() => this.add()}"><span>Add new</span></a>
+      </div>
     `;
   }
 }
