@@ -48,7 +48,7 @@ class FCPrimitive extends BaseComponent {
   template() {
     let type = this.schema && this.schema.attributes && this.schema.attributes.type ? this.schema.attributes.type : this.constructor.primitives[this.type];
     return html`
-      <label ?hidden="${!this.label}">${this.label}</label> <input type="${type}" .value="${this.value}" ?required="${this.required}" @change="${this._onChange.bind(this)}" />
+      <input type="${type}" .value="${this.value}" ?required="${this.required}" @change="${this._onChange.bind(this)}" />
     `;
   }
 }
@@ -104,7 +104,6 @@ class FCSelect extends FCPrimitive {
 
   template() {
     return html`
-      <label ?hidden="${!this.label}">${this.label}</label>
       <select @change="${this._onChange.bind(this)}" ?required="${this.required}" ?multiple="${this.multiple}" ?novalue="${!this.value}">
         ${this.multiple
           ? ''
@@ -139,7 +138,7 @@ function getInputInstance({ schema, value }) {
 
   let wInstance = {};
   let objProps = { schema, value };
-  ['label', 'labels', 'placeholder', 'placeholders', 'type', 'model', 'items', 'options', 'required', 'multiple'].forEach((k) => {
+  ['labels', 'placeholder', 'placeholders', 'type', 'modelName', 'items', 'options', 'required', 'multiple'].forEach((k) => {
     if (schema[k]) {
       objProps[k] = schema[k];
     }
@@ -203,6 +202,7 @@ class FCArray extends BaseComponent {
   }
 
   add() {
+    //TODO: refactor
     let wInstance = getInputInstance({ schema: this.schema.items });
     Object.defineProperty(this.value, this.value.length, {
       get() {
@@ -219,7 +219,6 @@ class FCArray extends BaseComponent {
 
   template() {
     return html`
-      <label ?hidden="${!this.label}">${this.label}</label>
       <div>
         ${(this.fields || []).map(
           (i) =>
@@ -274,8 +273,17 @@ class FCObject extends BaseComponent {
 
   template() {
     return html`
-      <label ?hidden="${!this.label}">${this.label}</label>
-      <div>${(this.fields || []).map((i) => (i.el instanceof HTMLElement ? i.el : i))}</div>
+      <div>
+        ${(this.fields || []).map(
+          (i) =>
+            html`
+              <div class="fc-object-item">
+                <label ?hidden="${!i.schema.label}">${i.schema.label}</label>
+                ${i.el instanceof HTMLElement ? i.el : i}
+              </div>
+            `
+        )}
+      </div>
     `;
   }
 
