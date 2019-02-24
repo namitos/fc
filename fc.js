@@ -185,35 +185,37 @@ class FCArray extends BaseComponent {
 
     let fields = [];
     this.value.forEach((valueItem, i) => {
-      let wInstance = getInputInstance({ schema: this.schema.items, value: valueItem });
-      Object.defineProperty(this.value, i, {
-        get() {
-          return wInstance.value;
-        },
-        set(v) {
-          wInstance.value = v;
-        },
-        enumerable: true
-      });
+      let wInstance = this._initWInstance(valueItem, i);
       fields.push(wInstance);
     });
     this.fields = fields;
     this.render();
   }
 
-  add() {
-    //TODO: refactor
-    let wInstance = getInputInstance({ schema: this.schema.items });
-    Object.defineProperty(this.value, this.value.length, {
+  _initWInstance(value, i) {
+    let wInstance = getInputInstance({ schema: this.schema.items, value });
+    Object.defineProperty(this.value, typeof i === 'number' ? i : this.value.length, {
       get() {
         return wInstance.value;
       },
       set(v) {
         wInstance.value = v;
       },
-      enumerable: true
+      enumerable: true,
+      configurable: true
     });
+    return wInstance;
+  }
+
+  _add() {
+    let wInstance = this._initWInstance();
     this.fields.push(wInstance);
+    this.render();
+  }
+
+  _remove(i) {
+    this.value.splice(i, 1);
+    this.fields.splice(i, 1);
     this.render();
   }
 
@@ -221,12 +223,15 @@ class FCArray extends BaseComponent {
     return html`
       <div>
         ${(this.fields || []).map(
-          (i) =>
+          (item, i) =>
             html`
-              <div class="fc-array-item">${i.el instanceof HTMLElement ? i.el : i}</div>
+              <div class="fc-array-item">
+                ${item.el instanceof HTMLElement ? item.el : item}
+                <a class="fc-array-item-remove" @click="${() => this._remove(i)}">Remove</a>
+              </div>
             `
         )}
-        <a class="fc-array-add" @click="${() => this.add()}"><span>Add new</span></a>
+        <a class="fc-array-add" @click="${() => this._add()}"><span>Add new</span></a>
       </div>
     `;
   }
