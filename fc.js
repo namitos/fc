@@ -227,11 +227,11 @@ class FCArray extends BaseComponent {
             html`
               <div class="fc-array-item">
                 ${item.el instanceof HTMLElement ? item.el : item}
-                <a class="fc-array-item-remove" @click="${() => this._remove(i)}">Remove</a>
+                <a class="fc-array-item-remove" @click="${() => this._remove(i)}"><span>🞫</span></a>
               </div>
             `
         )}
-        <a class="fc-array-add" @click="${() => this._add()}"><span>Add new</span></a>
+        <a class="fc-array-item-add" @click="${() => this._add()}"><span>🞤</span></a>
       </div>
     `;
   }
