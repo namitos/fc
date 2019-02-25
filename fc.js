@@ -138,7 +138,23 @@ function getInputInstance({ schema, value }) {
 
   let wInstance = {};
   let objProps = { schema, value };
-  ['labels', 'placeholder', 'placeholders', 'type', 'modelName', 'items', 'options', 'required', 'multiple'].forEach((k) => {
+  [
+    //
+    'labels',
+    'placeholder',
+    'placeholders',
+    'type',
+    'modelName',
+    'items',
+    'images',
+    'options',
+    'required',
+    'multiple',
+    'buttonText',
+    'dropzoneText',
+    'urlPrefix',
+    'accept'
+  ].forEach((k) => {
     if (schema[k]) {
       objProps[k] = schema[k];
     }
@@ -303,4 +319,4 @@ function fc() {
   return new FCObject(...arguments).el;
 }
 
-export { widgets, fc };
+export { getInputInstance, widgets, fc };
