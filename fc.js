@@ -121,7 +121,7 @@ class FCSelect extends FCPrimitive {
   }
 }
 
-function getInputInstance({ schema, value }) {
+function getInputInstance({ schema, value, externalStyles }) {
   if (!value) {
     if (['number', 'integer'].includes(schema.type)) {
       value = 0;
@@ -137,7 +137,7 @@ function getInputInstance({ schema, value }) {
   }
 
   let wInstance = {};
-  let objProps = { schema, value };
+  let objProps = { schema, value, externalStyles };
   [
     //
     'labels',
@@ -209,7 +209,7 @@ class FCArray extends BaseComponent {
   }
 
   _initWInstance(value, i) {
-    let wInstance = getInputInstance({ schema: this.schema.items, value });
+    let wInstance = getInputInstance({ schema: this.schema.items, value, externalStyles: this.externalStyles });
     Object.defineProperty(this.value, typeof i === 'number' ? i : this.value.length, {
       get() {
         return wInstance.value;
@@ -274,7 +274,7 @@ class FCObject extends BaseComponent {
       let schema = this.schema.properties[propName];
       if (!schema.readOnlyIo) {
         let value = startValue[propName];
-        let wInstance = getInputInstance({ schema, value });
+        let wInstance = getInputInstance({ schema, value, externalStyles: this.externalStyles });
         fields.push(wInstance);
 
         Object.defineProperty(this.value, propName, {
@@ -296,11 +296,11 @@ class FCObject extends BaseComponent {
     return html`
       <div>
         ${(this.fields || []).map(
-          (i) =>
+          (item) =>
             html`
               <div class="fc-object-item">
-                <label ?hidden="${!i.schema.label}">${i.schema.label}</label>
-                ${i.el instanceof HTMLElement ? i.el : i}
+                <label ?hidden="${!item.schema.label}">${item.schema.label}</label>
+                ${item.el instanceof HTMLElement ? item.el : item}
               </div>
             `
         )}
