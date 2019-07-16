@@ -39,7 +39,8 @@ class FCPrimitive extends BaseComponent {
   }
 
   _onChange(e) {
-    this.value = this.prepareValue(e.target.value);
+    let { value, checked } = e.target;
+    this.value = this.prepareValue(this.type === 'boolean' ? checked : value);
     if (this.onChange) {
       this.onChange(this);
     }
@@ -48,7 +49,13 @@ class FCPrimitive extends BaseComponent {
   template() {
     let type = this.schema && this.schema.attributes && this.schema.attributes.type ? this.schema.attributes.type : this.constructor.primitives[this.type];
     return html`
-      <input type="${type}" .value="${this.value}" ?required="${this.required}" @change="${this._onChange.bind(this)}" />
+      ${this.type === 'boolean'
+        ? html`
+            <input type="checkbox" .checked="${this.value}" ?required="${this.required}" @change="${this._onChange.bind(this)}" />
+          `
+        : html`
+            <input type="${type}" .value="${this.value}" ?required="${this.required}" @change="${this._onChange.bind(this)}" />
+          `}
     `;
   }
 }
