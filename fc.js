@@ -160,7 +160,8 @@ function getInputInstance({ schema, value, externalStyles }) {
     'buttonText',
     'dropzoneText',
     'urlPrefix',
-    'accept'
+    'accept',
+    'disabled'
   ].forEach((k) => {
     if (schema[k]) {
       objProps[k] = schema[k];
