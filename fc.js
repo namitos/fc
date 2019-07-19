@@ -190,7 +190,6 @@ function getInputInstance({ schema, value, externalStyles }) {
     }
     wInstance = Object.assign(document.createElement(schema.widget), objProps);
   } else {
-    console.log(objProps);
     wInstance = new whatToCreate(objProps);
   }
 
