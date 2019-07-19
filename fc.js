@@ -111,7 +111,7 @@ class FCSelect extends FCPrimitive {
 
   template() {
     return html`
-      <select @change="${this._onChange.bind(this)}" ?required="${this.required}" ?multiple="${this.multiple}" ?novalue="${!this.value}">
+      <select @change="${this._onChange.bind(this)}" ?required="${this.required}" ?multiple="${this.multiple}" ?novalue="${!this.value}" ?disabled="${this.schema.attributes && this.schema.attributes.disabled}">
         ${this.multiple
           ? ''
           : html`
@@ -190,6 +190,7 @@ function getInputInstance({ schema, value, externalStyles }) {
     }
     wInstance = Object.assign(document.createElement(schema.widget), objProps);
   } else {
+    console.log(objProps);
     wInstance = new whatToCreate(objProps);
   }
 
