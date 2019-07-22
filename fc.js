@@ -129,6 +129,33 @@ class FCSelect extends FCPrimitive {
   }
 }
 
+class DateTime extends BaseComponent {
+  static get is() {
+    return 'input-date-time';
+  }
+
+  static get properties() {
+    return {
+      value: {
+        type: Number,
+        value: 0
+      }
+    };
+  }
+
+  template() {
+    let attributes = this.schema.attributes || {};
+    let v = this.value - new Date().getTimezoneOffset() * 60 * 1000;
+    return html`
+      <input type="datetime-local" .valueAsNumber="${v}" @change="${(e) => this._onChange(e)}" .min="${attributes.min || ''}" .max="${attributes.max || ''}" />
+    `;
+  }
+
+  _onChange(e) {
+    this.value = e.target.valueAsNumber + new Date().getTimezoneOffset() * 60 * 1000;
+  }
+}
+
 function getInputInstance({ schema, value, externalStyles }) {
   if (!value) {
     if (['number', 'integer'].includes(schema.type)) {
@@ -323,7 +350,8 @@ class FCObject extends BaseComponent {
   }
 }
 
-Object.assign(widgets, { FCPrimitive, FCSelect, FCObject });
+//class names started with "FC" are for internal widgets
+Object.assign(widgets, { FCObject, FCArray, FCPrimitive, FCSelect, DateTime });
 
 function fc() {
   return new FCObject(...arguments).el;
