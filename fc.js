@@ -47,14 +47,15 @@ class FCPrimitive extends BaseComponent {
   }
 
   template() {
-    let type = this.schema && this.schema.attributes && this.schema.attributes.type ? this.schema.attributes.type : this.constructor.primitives[this.type];
+    let attributes = (this.schema && this.schema.attributes) || {};
+    let type = attributes.type ? attributes.type : this.constructor.primitives[this.type];
     return html`
       ${this.type === 'boolean'
         ? html`
             <input type="checkbox" .checked="${this.value}" ?required="${this.required}" @change="${this._onChange.bind(this)}" />
           `
         : html`
-            <input type="${type}" .value="${this.value}" ?required="${this.required}" @change="${this._onChange.bind(this)}" />
+            <input type="${type}" .value="${this.value}" ?required="${this.required}" .step="${this.step || 1}" @change="${this._onChange.bind(this)}" />
           `}
     `;
   }
@@ -161,7 +162,8 @@ function getInputInstance({ schema, value, externalStyles }) {
     'dropzoneText',
     'urlPrefix',
     'accept',
-    'disabled'
+    'disabled',
+    'step'
   ].forEach((k) => {
     if (schema[k]) {
       objProps[k] = schema[k];
