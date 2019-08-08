@@ -112,7 +112,7 @@ class FCSelect extends FCPrimitive {
 
   template() {
     return html`
-      <select @change="${this._onChange.bind(this)}" ?required="${this.required}" ?multiple="${this.multiple}" ?novalue="${!this.value}" ?disabled="${this.schema.attributes && this.schema.attributes.disabled}">
+      <select @change="${this._onChange.bind(this)}" ?required="${this.required}" ?multiple="${this.multiple}" ?novalue="${!this.value}" ?disabled="${this.schema && this.schema.attributes && this.schema.attributes.disabled}">
         ${this.multiple
           ? ''
           : html`
