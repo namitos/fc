@@ -12,6 +12,13 @@ class FCPrimitive extends BaseComponent {
       value: {},
       required: {
         type: Boolean
+      },
+      items: {
+        type: Array,
+        value: () => []
+      },
+      options: {
+        type: Object
       }
     };
   }
@@ -69,13 +76,12 @@ class FCSelect extends FCPrimitive {
         this.value = [this.value];
       }
     }
-    if (!this.items && this.options) {
+    if ((!this.items || !this.items.length) && this.options) {
       let items = [];
       Object.keys(this.options).forEach((k) => {
         items.push({ _id: k, name: this.options[k] });
       });
       this.items = items;
-      this.render();
     }
   }
 
