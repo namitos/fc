@@ -137,7 +137,7 @@ class FCSelect extends FCPrimitive {
 
 class DateTime extends BaseComponent {
   static get is() {
-    return 'fc-date-time';
+    return 'fc-datetime';
   }
 
   static get properties() {
