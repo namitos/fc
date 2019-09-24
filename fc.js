@@ -137,20 +137,21 @@ class FCSelect extends FCPrimitive {
 
 class DateTime extends BaseComponent {
   static get is() {
-    return 'input-date-time';
+    return 'fc-date-time';
   }
 
   static get properties() {
     return {
       value: {
         type: Number,
-        value: 0
+        value: 0,
+        notify: true
       }
     };
   }
 
   template() {
-    let attributes = this.schema.attributes || {};
+    let attributes = (this.schema && this.schema.attributes) || {};
     let v = this.value - new Date().getTimezoneOffset() * 60 * 1000;
     return html`
       <input type="datetime-local" .valueAsNumber="${v}" @change="${(e) => this._onChange(e)}" .min="${attributes.min || ''}" .max="${attributes.max || ''}" />
