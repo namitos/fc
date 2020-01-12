@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/namitos/fc#readme",
   "dependencies": {
-    "webcomponents-collection": "github:namitos/webcomponents-collection#v1"
+    "webcomponents-collection": "github:namitos/webcomponents-collection#v2"
   }
 }
